@@ -15,15 +15,17 @@ class Purchase:
     Represents an owners purchase of a player
     """
 
-    def __init__(self, player, cost):
+    def __init__(self, player, cost, roster_slot):
         """
 
         :param player: player purchased
         :param cost: cost paid
+        :param roster_slot: roster_slot the player will occupy
         """
 
         self.player = player
         self.cost = cost
+        self.roster_slot = roster_slot
 
 
 class Owner:
@@ -52,11 +54,11 @@ class Owner:
         :param cost: cost to pay
         """
         self.money -= cost
-        self.purchases.append(Purchase(player,cost))
         # remove the roster slot that is the most specific
         # we know they are sorted by specificity
         for roster_slot in self.roster:
             if roster_slot.accepts(player):
+                self.purchases.append(Purchase(player, cost, roster_slot))
                 self.roster.remove(roster_slot)
                 break
 
@@ -115,6 +117,9 @@ class Auction:
         #holds bids submitted on a given tick (if there's a tie on the highest, the accepted bid for that tick is randomly chosen),
         #this doesn't mean they'll win that bid though, it just means their bid "went through"
         self.tickbids = [0] * num_owners
+        #holds the actual submitted bid values for the current nominee, just so one can see
+        #who has bid what so far
+        self.bids = [0] * num_owners
 
     def _winning_owner(self):
         """
@@ -227,3 +232,38 @@ class Auction:
         self.bid = bid
 
         return True
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        response = "State: "
+        if self.state == AuctionState.NOMINATE:
+            response += "Nominating\n"
+            response += "Owner " + str(self.turn_index) + "'s turn\n"
+        else:
+            response += "Bidding\n\n"
+            response += "Nominee: " + self.nominee.position.name + " " + self.nominee.name + " ($" + str(self.nominee.value) + ")" "\n\n"
+
+        for i, owner in enumerate(self.owners):
+            response += "Owner " + str(i) + ": $" + str(self.bids[i]) + "(Tick: $" + str(self.tickbids[i]) + " Max $" + str(owner.max_bid()) + ")\n"
+
+        response += "\n###OWNER STATUS###\n"
+
+        for i, owner in enumerate(self.owners):
+            response += "Owner " + str(i) + "\nPurchased:\n"
+
+            for purchase in owner.purchases:
+                response += purchase.roster_slot.abbreviation + " " + purchase.player.name + " ($" + str(purchase.cost) + ")\n"
+
+            response += "Open:\n"
+            for roster_slot in owner.roster:
+                response += roster_slot.abbreviation + "\n"
+            response += "\n"
+
+        response += "\n###UNDRAFTED PLAYERS###\n"
+
+        for i, player in enumerate(self.undrafted_players):
+            response += str(i+1) + ". " + str(player.position.name) + " " + str(player.name) + " ($" + str(player.value) + ")\n"
+
+        return response
