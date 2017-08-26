@@ -10,6 +10,7 @@ class AuctionState(Enum):
     """
     NOMINATE = auto(),
     BID = auto(),
+    DONE = auto(),
 
 
 class Purchase:
@@ -35,11 +36,12 @@ class Owner:
     Represents an owner during an auction
     """
 
-    def __init__(self, money, roster):
+    def __init__(self, money, roster, id):
         """
 
         :param money: starting money
         :param roster: roster slots this player needs to fill
+        :param id: unique id of the owner to distinguish it from other owners, Must be [0,num owners)
         """
         self.money = money
         # create our own copy so we can sort by the number of accepted positions
@@ -47,6 +49,7 @@ class Owner:
         self.roster.sort(key=lambda roster_slot: roster_slot.num_accepted())
         # tracks the purchases made by this owner
         self.purchases = []
+        self.id = id
 
     def buy(self, player, cost):
         """
@@ -71,16 +74,35 @@ class Owner:
         one dollar per slot and must fill all slots).
 
         """
-        return (self.money + 1) - (len(self.roster) - len(self.purchases))
+        return (self.money + 1) - len(self.roster)
 
-    def can_buy(self, player):
+    def can_buy(self, player, bid):
         """
 
         :param player: player to check
-        :return: true iff this owner has space in the roster for the given player
+        :param bid: bid amount
+        :return: true iff this owner has space in the roster for the given player and has enough to
+            bid the given amount
         """
 
-        return any(roster_slot.accepts(player) for roster_slot in self.roster)
+        return any(roster_slot.accepts(player) for roster_slot in self.roster) and bid <= self.max_bid()
+
+    def remaining_picks(self):
+        """
+
+        :return: the number of picks left for this owner to make until their roster is filled, 0 if full
+        """
+
+        return len(self.roster)
+
+    def possible_nominees(self, players):
+        """
+
+        :param players: list of players to choose from
+        :return: a list of players that could be legally nominated by this owner
+        """
+
+        return list(filter(lambda player: self.can_buy(player,1), players))
 
 
 class Auction:
@@ -105,7 +127,7 @@ class Auction:
         """
         # dictionary from fids to the player
         self.fids_to_players = {player.fid: player for player in players}
-        self.owners = [Owner(money, roster) for i in range(num_owners)]
+        self.owners = [Owner(money, roster, i) for i in range(num_owners)]
         self.drafted_fids = {}
         # sorted by value
         self.undrafted_players = list(players)
@@ -164,7 +186,11 @@ class Auction:
                 self.drafted_fids[self.nominee.fid] = self.nominee
                 self.undrafted_players.remove(self.nominee)
                 self.nominee = None
-                self.state = AuctionState.NOMINATE
+                # check if we're done
+                if any(owner.remaining_picks() > 0 for owner in self.owners):
+                    self.state = AuctionState.NOMINATE
+                else:
+                    self.state = AuctionState.DONE
             else:
                 # new bids have been submitted, randomly pick the bid to accept from the highest, then everyone gets a chance to submit more
                 top_idxs = [i for i, bid in enumerate(self.tickbids) if bid == max(self.tickbids)]
@@ -185,6 +211,11 @@ class Auction:
         :param bid: bid amount
         :return: false iff choice was not allowed
         """
+
+        #is it time to bid?
+        if self.state != AuctionState.BID:
+            return False
+
         # is bid greater than current bid amount
         if self.bid > bid:
             return False
@@ -194,11 +225,7 @@ class Auction:
             return False
 
         # can this owner add the player to their roster
-        if not self.owners[owner_id].can_buy(self.nominee):
-            return False
-
-        # do they have enough
-        if bid > self.owners[owner_id].max_bid():
+        if not self.owners[owner_id].can_buy(self.nominee, bid):
             return False
 
         # success, add their bid to the current tick
@@ -219,7 +246,8 @@ class Auction:
         owner = self.owners[owner_id]
 
         # Is it time to nominate?
-        if (self.state != AuctionState.NOMINATE): return False
+        if self.state != AuctionState.NOMINATE:
+            return False
 
         # Is the player draftable?
         if fid in self.drafted_fids:
@@ -237,8 +265,17 @@ class Auction:
         if self.nominee is not None:
             return False
 
+        #bid must be 1 or higher
+        if bid < 1:
+            return False
+
+        player = self.fids_to_players[fid]
+        # can any owner actually get this player
+        if not any(owner.can_buy(player,bid) for owner in self.owners):
+            return False
+
         # nomination successful, bidding time
-        self.nominee = self.fids_to_players[fid]
+        self.nominee = player
         self.bid = bid
 
         return True

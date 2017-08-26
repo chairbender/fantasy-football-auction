@@ -5,17 +5,17 @@ class Position(Enum):
     """
     Represents a position in football that a player occupies.
     """
-    QB = 1,
-    RB = 2
-    WR = 3,
-    TE = 4,
-    DST = 5,
-    K = 6,
-    LB = 7,
-    DE = 8,
-    DT = 9,
-    CB = 10,
-    S = 11
+    QB = 0,
+    RB = 1
+    WR = 2,
+    TE = 3,
+    DST = 4,
+    K = 5,
+    LB = 6,
+    DE = 7,
+    DT = 8,
+    CB = 9,
+    S = 10
 
 
 class RosterSlot:
@@ -69,3 +69,8 @@ RosterSlot.DE = RosterSlot({Position.DE}, "DE")
 RosterSlot.DT = RosterSlot({Position.DT}, "DT")
 RosterSlot.CB = RosterSlot({Position.CB}, "CB")
 RosterSlot.S = RosterSlot({Position.S}, "S")
+
+RosterSlot.slots = [RosterSlot.QB, RosterSlot.RB, RosterSlot.WR, RosterSlot.TE, RosterSlot.WRRB, RosterSlot.WRTE,
+                    RosterSlot.RBTE, RosterSlot.WRRBTE, RosterSlot.QBWRRBTE, RosterSlot.DST, RosterSlot.K,
+                    RosterSlot.BN, RosterSlot.DL, RosterSlot.LB, RosterSlot.DB, RosterSlot.IDP, RosterSlot.DE,
+                    RosterSlot.DT, RosterSlot.CB, RosterSlot.S]
