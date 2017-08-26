@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Position(Enum):
     """
     Represents a position in football that a player occupies.
@@ -29,6 +30,21 @@ class RosterSlot:
         """
         self.positions = positions
 
+    def num_accepted(self):
+        """
+
+        :return: number of different accepted positions
+        """
+        return len(self.positions)
+
+    def accepts(self, player):
+        """
+
+        :param player: player to check
+        :return: true iff this slot accepts the player, based on their position
+        """
+        return player.position in self.positions
+
 RosterSlot.QB = RosterSlot({Position.QB})
 RosterSlot.RB = RosterSlot({Position.RB})
 RosterSlot.WR = RosterSlot({Position.WR})
@@ -40,7 +56,7 @@ RosterSlot.WRRBTE = RosterSlot({Position.WR, Position.RB, Position.TE})
 RosterSlot.QBWRRBTE = RosterSlot({Position.QB, Position.WR, Position.RB, Position.TE})
 RosterSlot.DST = RosterSlot({Position.DST})
 RosterSlot.K = RosterSlot({Position.K})
-RosterSlot.BENCH = RosterSlot({Position.QB, Position.RB, Position.WR, Position.TE, Position.DST, Position.K,
+RosterSlot.BN = RosterSlot({Position.QB, Position.RB, Position.WR, Position.TE, Position.DST, Position.K,
                                Position.LB, Position.DE, Position.DT, Position.CB, Position.S})
 RosterSlot.DL = RosterSlot({Position.DT, Position.DE})
 RosterSlot.LB = RosterSlot({Position.LB})
