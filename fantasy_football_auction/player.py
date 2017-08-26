@@ -22,6 +22,7 @@ class Player:
         self.position = position
         self.value = value
 
+
 def players_from_fantasypros_cheatsheet(file):
     """
     :param file: path to the file containing the player values in the standard
@@ -37,10 +38,10 @@ def players_from_fantasypros_cheatsheet(file):
         for row in playerreader:
             if linecount > 1:
                 rawName = row[0]
-                name = rawName[:rawName.find('(')-1]
-                positionText = rawName[rawName.find('(')+1:rawName.find('-')-1]
+                name = rawName[:rawName.find('(') - 1]
+                positionText = rawName[rawName.find('(') + 1:rawName.find('-') - 1]
                 position = Position[positionText]
-                value = int(row[2].replace('$',''))
+                value = int(row[2].replace('$', ''))
                 players.append(Player(playerindex, name, position, value))
                 playerindex += 1
             linecount += 1

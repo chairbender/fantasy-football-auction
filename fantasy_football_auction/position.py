@@ -11,8 +11,8 @@ class Position(Enum):
     TE = 4,
     DST = 5,
     K = 6,
-    LB =7,
-    DE  = 8,
+    LB = 7,
+    DE = 8,
     DT = 9,
     CB = 10,
     S = 11
@@ -47,24 +47,25 @@ class RosterSlot:
         """
         return player.position in self.positions
 
-RosterSlot.QB = RosterSlot({Position.QB},"QB")
-RosterSlot.RB = RosterSlot({Position.RB},"RB")
-RosterSlot.WR = RosterSlot({Position.WR},"WR")
-RosterSlot.TE = RosterSlot({Position.TE},"TE")
-RosterSlot.WRRB = RosterSlot({Position.WR, Position.RB},"WR/RB")
-RosterSlot.WRTE = RosterSlot({Position.WR, Position.TE},"WR/TE")
-RosterSlot.RBTE = RosterSlot({Position.RB, Position.TE},"RB/TE")
-RosterSlot.WRRBTE = RosterSlot({Position.WR, Position.RB, Position.TE},"WR/RB/TE")
-RosterSlot.QBWRRBTE = RosterSlot({Position.QB, Position.WR, Position.RB, Position.TE},"QB/WR/RB/TE")
-RosterSlot.DST = RosterSlot({Position.DST},"DST")
-RosterSlot.K = RosterSlot({Position.K},"K")
+
+RosterSlot.QB = RosterSlot({Position.QB}, "QB")
+RosterSlot.RB = RosterSlot({Position.RB}, "RB")
+RosterSlot.WR = RosterSlot({Position.WR}, "WR")
+RosterSlot.TE = RosterSlot({Position.TE}, "TE")
+RosterSlot.WRRB = RosterSlot({Position.WR, Position.RB}, "WR/RB")
+RosterSlot.WRTE = RosterSlot({Position.WR, Position.TE}, "WR/TE")
+RosterSlot.RBTE = RosterSlot({Position.RB, Position.TE}, "RB/TE")
+RosterSlot.WRRBTE = RosterSlot({Position.WR, Position.RB, Position.TE}, "WR/RB/TE")
+RosterSlot.QBWRRBTE = RosterSlot({Position.QB, Position.WR, Position.RB, Position.TE}, "QB/WR/RB/TE")
+RosterSlot.DST = RosterSlot({Position.DST}, "DST")
+RosterSlot.K = RosterSlot({Position.K}, "K")
 RosterSlot.BN = RosterSlot({Position.QB, Position.RB, Position.WR, Position.TE, Position.DST, Position.K,
-                               Position.LB, Position.DE, Position.DT, Position.CB, Position.S},"BN")
-RosterSlot.DL = RosterSlot({Position.DT, Position.DE},"DL")
-RosterSlot.LB = RosterSlot({Position.LB},"LB")
-RosterSlot.DB = RosterSlot({Position.CB, Position.S},"DB")
-RosterSlot.IDP = RosterSlot({Position.LB, Position.DE, Position.DT, Position.CB, Position.S},"IDP")
-RosterSlot.DE = RosterSlot({Position.DE},"DE")
-RosterSlot.DT = RosterSlot({Position.DT},"DT")
-RosterSlot.CB = RosterSlot({Position.CB},"CB")
-RosterSlot.S = RosterSlot({Position.S},"S")
+                            Position.LB, Position.DE, Position.DT, Position.CB, Position.S}, "BN")
+RosterSlot.DL = RosterSlot({Position.DT, Position.DE}, "DL")
+RosterSlot.LB = RosterSlot({Position.LB}, "LB")
+RosterSlot.DB = RosterSlot({Position.CB, Position.S}, "DB")
+RosterSlot.IDP = RosterSlot({Position.LB, Position.DE, Position.DT, Position.CB, Position.S}, "IDP")
+RosterSlot.DE = RosterSlot({Position.DE}, "DE")
+RosterSlot.DT = RosterSlot({Position.DT}, "DT")
+RosterSlot.CB = RosterSlot({Position.CB}, "CB")
+RosterSlot.S = RosterSlot({Position.S}, "S")

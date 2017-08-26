@@ -3,12 +3,14 @@ from enum import Enum, auto
 from functools import reduce
 from itertools import count, filterfalse
 
+
 class AuctionState(Enum):
     """
     A state for the auction to be in
     """
     NOMINATE = auto(),
     BID = auto(),
+
 
 class Purchase:
     """
@@ -80,6 +82,7 @@ class Owner:
 
         return any(roster_slot.accepts(player) for roster_slot in self.roster)
 
+
 class Auction:
     """
     Represents a fantasy football auction.
@@ -90,6 +93,7 @@ class Auction:
     You specify the number and type of each position that needs to be filled on each
     team.
     """
+
     def __init__(self, players, num_owners, money, roster):
         """
         Starts the auction with the specified settings.
@@ -99,26 +103,26 @@ class Auction:
         :param money: integer dollar amount of money each player has
         :param positions: list of RosterPositions each player needs to fill
         """
-        #dictionary from fids to the player
+        # dictionary from fids to the player
         self.fids_to_players = {player.fid: player for player in players}
-        self.owners = [Owner(money,roster) for i in range(num_owners)]
+        self.owners = [Owner(money, roster) for i in range(num_owners)]
         self.drafted_fids = {}
-        #sorted by value
+        # sorted by value
         self.undrafted_players = list(players)
         self.undrafted_players.sort(key=lambda player: player.value, reverse=True)
         self.money = money
         self.roster = roster
         self.state = AuctionState.NOMINATE
-        #index of owner whose turn it is to nominate
+        # index of owner whose turn it is to nominate
         self.turn_index = 0
 
         # holds current bid nominee
         self.nominee = None
-        #holds bids submitted on a given tick (if there's a tie on the highest, the accepted bid for that tick is randomly chosen),
-        #this doesn't mean they'll win that bid though, it just means their bid "went through"
+        # holds bids submitted on a given tick (if there's a tie on the highest, the accepted bid for that tick is randomly chosen),
+        # this doesn't mean they'll win that bid though, it just means their bid "went through"
         self.tickbids = [0] * num_owners
-        #holds the actual submitted bid values for the current nominee, just so one can see
-        #who has bid what so far
+        # holds the actual submitted bid values for the current nominee, just so one can see
+        # who has bid what so far
         self.bids = [0] * num_owners
 
     def _winning_owner(self):
@@ -141,7 +145,7 @@ class Auction:
         game state using the other methods.
         """
         if self.state == AuctionState.NOMINATE:
-            #if no nominee submitted, pick the next highest valued player for $1
+            # if no nominee submitted, pick the next highest valued player for $1
             if self.nominee is None:
                 self.nominee = self.undrafted_players[0]
                 self.bid = 1
@@ -156,7 +160,7 @@ class Auction:
             # If no new bids submitted, we're done with this bid and the player gets what they bid for
             if not any(bid > 0 for bid in self.tickbids):
                 winner = self._winning_owner()
-                winner.buy(self.nominee,self.bid)
+                winner.buy(self.nominee, self.bid)
                 self.drafted_fids[self.nominee.fid] = self.nominee
                 self.undrafted_players.remove(self.nominee)
                 self.nominee = None
@@ -165,9 +169,9 @@ class Auction:
                 # new bids have been submitted, randomly pick the bid to accept from the highest, then everyone gets a chance to submit more
                 top_idxs = [i for i, bid in enumerate(self.tickbids) if bid == max(self.tickbids)]
                 accept_idx = random.choice(top_idxs)
-                #set this as the new bid
+                # set this as the new bid
                 self.bid = self.tickbids[accept_idx]
-                #update the bids for this round
+                # update the bids for this round
                 self.bids[accept_idx] = self.bid
                 # clear this for the next tick
                 self.tickbids = [0] * len(self.owners)
@@ -214,18 +218,18 @@ class Auction:
 
         owner = self.owners[owner_id]
 
-        #Is it time to nominate?
+        # Is it time to nominate?
         if (self.state != AuctionState.NOMINATE): return False
 
-        #Is the player draftable?
+        # Is the player draftable?
         if fid in self.drafted_fids:
             return False
 
-        #Is it this owner's turn to nominate?
+        # Is it this owner's turn to nominate?
         if owner_id != self.turn_index:
             return False
 
-        #Is the owner allowed to bid that much?
+        # Is the owner allowed to bid that much?
         if bid > owner.max_bid():
             return False
 
@@ -233,7 +237,7 @@ class Auction:
         if self.nominee is not None:
             return False
 
-        #nomination successful, bidding time
+        # nomination successful, bidding time
         self.nominee = self.fids_to_players[fid]
         self.bid = bid
 
@@ -249,10 +253,12 @@ class Auction:
             response += "Owner " + str(self.turn_index) + "'s turn\n"
         else:
             response += "Bidding\n\n"
-            response += "Nominee: " + self.nominee.position.name + " " + self.nominee.name + " ($" + str(self.nominee.value) + ")" "\n\n"
+            response += "Nominee: " + self.nominee.position.name + " " + self.nominee.name + " ($" + str(
+                self.nominee.value) + ")" "\n\n"
 
         for i, owner in enumerate(self.owners):
-            response += "Owner " + str(i) + ": $" + str(self.bids[i]) + "(Tick: $" + str(self.tickbids[i]) + " Max $" + str(owner.max_bid()) + ")\n"
+            response += "Owner " + str(i) + ": $" + str(self.bids[i]) + "(Tick: $" + str(
+                self.tickbids[i]) + " Max $" + str(owner.max_bid()) + ")\n"
 
         response += "\n###OWNER STATUS###\n"
 
@@ -260,7 +266,8 @@ class Auction:
             response += "Owner " + str(i) + "\nPurchased:\n"
 
             for purchase in owner.purchases:
-                response += purchase.roster_slot.abbreviation + " " + purchase.player.name + " ($" + str(purchase.cost) + ")\n"
+                response += purchase.roster_slot.abbreviation + " " + purchase.player.name + " ($" + str(
+                    purchase.cost) + ")\n"
 
             response += "Open:\n"
             for roster_slot in owner.roster:
@@ -270,6 +277,7 @@ class Auction:
         response += "\n###UNDRAFTED PLAYERS###\n"
 
         for i, player in enumerate(self.undrafted_players):
-            response += str(i+1) + ". " + str(player.position.name) + " " + str(player.name) + " ($" + str(player.value) + ")\n"
+            response += str(i + 1) + ". " + str(player.position.name) + " " + str(player.name) + " ($" + str(
+                player.value) + ")\n"
 
         return response
