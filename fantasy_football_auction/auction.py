@@ -280,6 +280,18 @@ class Auction:
 
         return True
 
+    def scores(self, starter_value):
+        """
+
+        :param starter_value: floating point between 0 and 1 inclusive indicating how heavily the final score should
+            be weighted between starter and bench. If 1, for example, bench value will be completely ignored when calculating
+            winners. If 0, only bench value will be used to calculate winners
+        :return: an array of weighted final scores, with index corresponding to owner index and
+            element value corresponding to the weighted score (weighted based on starter_value)
+        """
+        return map(lambda owner: owner.start_value() * starter_value - owner.bench_value() * (1 - starter_value), self.owners)
+
+
     def __repr__(self):
         return self.__str__()
 
