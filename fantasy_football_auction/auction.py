@@ -193,8 +193,14 @@ class Auction:
         if not self.owners[owner_id].can_buy(self.nominee):
             return False
 
+        # do they have enough
+        if bid > self.owners[owner_id].max_bid():
+            return False
+
         # success, add their bid to the current tick
         self.tickbids[owner_id] = bid
+
+        return True
 
     def nominate(self, owner_id, fid, bid):
         """
