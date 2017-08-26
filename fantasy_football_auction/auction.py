@@ -8,9 +8,9 @@ class AuctionState(Enum):
     """
     A state for the auction to be in
     """
-    NOMINATE = auto(),
-    BID = auto(),
-    DONE = auto(),
+    NOMINATE = 0
+    BID = 1
+    DONE = 2
 
 
 class Purchase:
@@ -125,10 +125,8 @@ class Auction:
         :param money: integer dollar amount of money each player has
         :param positions: list of RosterPositions each player needs to fill
         """
-        # dictionary from fids to the player
-        self.fids_to_players = {player.fid: player for player in players}
         self.owners = [Owner(money, roster, i) for i in range(num_owners)]
-        self.drafted_fids = {}
+        self.players = players
         # sorted by value
         self.undrafted_players = list(players)
         self.undrafted_players.sort(key=lambda player: player.value, reverse=True)
@@ -183,7 +181,6 @@ class Auction:
             if not any(bid > 0 for bid in self.tickbids):
                 winner = self._winning_owner()
                 winner.buy(self.nominee, self.bid)
-                self.drafted_fids[self.nominee.fid] = self.nominee
                 self.undrafted_players.remove(self.nominee)
                 self.nominee = None
                 # check if we're done
@@ -233,24 +230,25 @@ class Auction:
 
         return True
 
-    def nominate(self, owner_id, fid, bid):
+    def nominate(self, owner_id, player_idx, bid):
         """
         Nominates the player for auctioning.
 
         :param owner_id: index of the owner who is nominating
-        :param fid: fid of the player to nominate
+        :param player_idx: index of the player to nominate in the players array
         :param bid: starting bid
         :return false iff operation not allowed in the current state
         """
 
         owner = self.owners[owner_id]
+        nominated_player = self.players[player_idx]
 
         # Is it time to nominate?
         if self.state != AuctionState.NOMINATE:
             return False
 
         # Is the player draftable?
-        if fid in self.drafted_fids:
+        if nominated_player not in self.undrafted_players:
             return False
 
         # Is it this owner's turn to nominate?
@@ -269,13 +267,12 @@ class Auction:
         if bid < 1:
             return False
 
-        player = self.fids_to_players[fid]
         # can any owner actually get this player
-        if not any(owner.can_buy(player,bid) for owner in self.owners):
+        if not any(owner.can_buy(nominated_player,bid) for owner in self.owners):
             return False
 
         # nomination successful, bidding time
-        self.nominee = player
+        self.nominee = nominated_player
         self.bid = bid
 
         return True

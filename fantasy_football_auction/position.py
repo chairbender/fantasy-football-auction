@@ -5,16 +5,16 @@ class Position(Enum):
     """
     Represents a position in football that a player occupies.
     """
-    QB = 0,
+    QB = 0
     RB = 1
-    WR = 2,
-    TE = 3,
-    DST = 4,
-    K = 5,
-    LB = 6,
-    DE = 7,
-    DT = 8,
-    CB = 9,
+    WR = 2
+    TE = 3
+    DST = 4
+    K = 5
+    LB = 6
+    DE = 7
+    DT = 8
+    CB = 9
     S = 10
 
 

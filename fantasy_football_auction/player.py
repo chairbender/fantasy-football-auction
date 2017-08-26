@@ -9,15 +9,12 @@ class Player:
     name, id, and value (as in how good they are to have on your team)
     """
 
-    def __init__(self, fid, name, position, value):
+    def __init__(self, name, position, value):
         """
-        :param fid: (football id) shorthand id integer to use to refer to this player,
-            must not overlap with any other player
         :param name: name of this player
         :param position: Position this player plays
         :param value: integer value of this player (how good they are)
         """
-        self.fid = fid
         self.name = name
         self.position = position
         self.value = value
@@ -42,7 +39,7 @@ def players_from_fantasypros_cheatsheet(file):
                 positionText = rawName[rawName.find('(') + 1:rawName.find('-') - 1]
                 position = Position[positionText]
                 value = int(row[2].replace('$', ''))
-                players.append(Player(playerindex, name, position, value))
+                players.append(Player(name, position, value))
                 playerindex += 1
             linecount += 1
     return players
