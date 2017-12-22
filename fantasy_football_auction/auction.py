@@ -1,7 +1,5 @@
 import random
-from enum import Enum, auto
-from functools import reduce
-from itertools import count, filterfalse
+from enum import Enum
 
 
 class AuctionState(Enum):
@@ -36,12 +34,12 @@ class Owner:
     Represents an owner during an auction
     """
 
-    def __init__(self, money, roster, id):
+    def __init__(self, money, roster, owner_id):
         """
 
         :param money: starting money
         :param roster: roster slots this player needs to fill
-        :param id: unique id of the owner to distinguish it from other owners, Must be [0,num owners)
+        :param owner_id: unique id of the owner to distinguish it from other owners, Must be [0,num owners)
         """
         self.money = money
         # create our own copy so we can sort by the number of accepted positions
@@ -49,7 +47,7 @@ class Owner:
         self.roster.sort(key=lambda roster_slot: roster_slot.num_accepted())
         # tracks the purchases made by this owner
         self.purchases = []
-        self.id = id
+        self.id = owner_id
 
     def buy(self, player, cost):
         """
@@ -102,7 +100,7 @@ class Owner:
         :return: a list of players that could be legally nominated by this owner
         """
 
-        return list(filter(lambda player: self.can_buy(player,1), players))
+        return list(filter(lambda player: self.can_buy(player, 1), players))
 
 
 class Auction:
@@ -123,7 +121,7 @@ class Auction:
         :param players: Players in this auction
         :param num_owners: number of owners. Owners are referenced by integer id.
         :param money: integer dollar amount of money each player has
-        :param positions: list of RosterPositions each player needs to fill
+        :param roster: list of RosterPositions each player needs to fill
         """
         self.owners = [Owner(money, roster, i) for i in range(num_owners)]
         self.players = players
@@ -138,7 +136,8 @@ class Auction:
 
         # holds current bid nominee
         self.nominee = None
-        # holds bids submitted on a given tick (if there's a tie on the highest, the accepted bid for that tick is randomly chosen),
+        # holds bids submitted on a given tick
+        # (if there's a tie on the highest, the accepted bid for that tick is randomly chosen),
         # this doesn't mean they'll win that bid though, it just means their bid "went through"
         self.tickbids = [0] * num_owners
         # holds the actual submitted bid values for the current nominee, just so one can see
@@ -189,7 +188,9 @@ class Auction:
                 else:
                     self.state = AuctionState.DONE
             else:
-                # new bids have been submitted, randomly pick the bid to accept from the highest, then everyone gets a chance to submit more
+                # new bids have been submitted,
+                # randomly pick the bid to accept from the highest,
+                # then everyone gets a chance to submit more
                 top_idxs = [i for i, bid in enumerate(self.tickbids) if bid == max(self.tickbids)]
                 accept_idx = random.choice(top_idxs)
                 # set this as the new bid
@@ -209,7 +210,7 @@ class Auction:
         :return: false iff choice was not allowed
         """
 
-        #is it time to bid?
+        # is it time to bid?
         if self.state != AuctionState.BID:
             return False
 
@@ -263,12 +264,12 @@ class Auction:
         if self.nominee is not None:
             return False
 
-        #bid must be 1 or higher
+        # bid must be 1 or higher
         if bid < 1:
             return False
 
         # can any owner actually get this player
-        if not any(owner.can_buy(nominated_player,bid) for owner in self.owners):
+        if not any(owner.can_buy(nominated_player, bid) for owner in self.owners):
             return False
 
         # nomination successful, bidding time
@@ -281,13 +282,14 @@ class Auction:
         """
 
         :param starter_value: floating point between 0 and 1 inclusive indicating how heavily the final score should
-            be weighted between starter and bench. If 1, for example, bench value will be completely ignored when calculating
-            winners. If 0, only bench value will be used to calculate winners
+            be weighted between starter and bench. If 1, for example, bench value will be completely ignored when
+            calculating winners. If 0, only bench value will be used to calculate winners
         :return: an array of weighted final scores, with index corresponding to owner index and
             element value corresponding to the weighted score (weighted based on starter_value)
         """
-        return map(lambda owner: owner.start_value() * starter_value - owner.bench_value() * (1 - starter_value), self.owners)
-
+        # TODO: This is too much in one line
+        return map(lambda owner: owner.start_value() * starter_value - owner.bench_value() * (1 - starter_value),
+                   self.owners)
 
     def __repr__(self):
         return self.__str__()

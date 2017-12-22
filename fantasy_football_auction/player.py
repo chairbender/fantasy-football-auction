@@ -34,10 +34,10 @@ def players_from_fantasypros_cheatsheet(file):
         linecount = 0
         for row in playerreader:
             if linecount > 1:
-                rawName = row[0]
-                name = rawName[:rawName.find('(') - 1]
-                positionText = rawName[rawName.find('(') + 1:rawName.find('-') - 1]
-                position = Position[positionText]
+                raw_name = row[0]
+                name = raw_name[:raw_name.find('(') - 1]
+                position_text = raw_name[raw_name.find('(') + 1:raw_name.find('-') - 1]
+                position = Position[position_text]
                 value = int(row[2].replace('$', ''))
                 players.append(Player(name, position, value))
                 playerindex += 1
