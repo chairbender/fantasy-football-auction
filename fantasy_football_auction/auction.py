@@ -112,16 +112,39 @@ class Auction:
     and the money available for each to spend.
     You specify the number and type of each position that needs to be filled on each
     team.
+
+    Attributes:
+        owners (:obj:`list` of :obj:`Owner`): all of the owners in the game
+        players (:obj:`list` of :obj:`Player`): all of the draftable players in the game
+        undrafted_players (:obj:`list` of :obj:`Player`): all of the undrafted players in the current
+            game
+        money (:obj:`int`): starting money of each owner
+        roster (:obj:`list` of :obj:`RosterPosition`): all of the slots that each owner needs
+            to fill in this game
+        state (:obj:`AuctionState`): current state of the auction game FSM
+        turn_index (:obj:`int`): index of owner whose turn it is to nominate a player
+            for auction
+        nominee (:obj:`Player`): current player who is up for auction
+        tickbids (:obj:`list` of :obj:`int`): current bids that have been submitted on
+            a given tick of the game. The index of this list represents the owner_id of the Owner
+            who submitted the bid.
+        bids: (:obj:`list` of :obj:`int`): each owner's most recent bid value for the current
+            nominee. The index of this list represents the owner_id of the Owner who submitted the
+            bid.
+
+
+
     """
 
     def __init__(self, players, num_owners, money, roster):
         """
         Starts the auction with the specified settings.
 
-        :param players: Players in this auction
-        :param num_owners: number of owners. Owners are referenced by integer id.
-        :param money: integer dollar amount of money each player has
-        :param roster: list of RosterPositions each player needs to fill
+        :param players (:obj:`list` of :obj:`Player`): Players in this auction
+        :param num_owners (:obj:`int`): number of owners. Owners are referenced by integer id.
+        :param money (:obj:`int`): integer dollar amount of money each player has
+        :param roster (:obj:`list` of :obj:`RosterPosition`):
+            list of RosterPositions each player needs to fill
         """
         self.owners = [Owner(money, roster, i) for i in range(num_owners)]
         self.players = players
@@ -131,17 +154,9 @@ class Auction:
         self.money = money
         self.roster = roster
         self.state = AuctionState.NOMINATE
-        # index of owner whose turn it is to nominate
         self.turn_index = 0
-
-        # holds current bid nominee
         self.nominee = None
-        # holds bids submitted on a given tick
-        # (if there's a tie on the highest, the accepted bid for that tick is randomly chosen),
-        # this doesn't mean they'll win that bid though, it just means their bid "went through"
         self.tickbids = [0] * num_owners
-        # holds the actual submitted bid values for the current nominee, just so one can see
-        # who has bid what so far
         self.bids = [0] * num_owners
 
     def _winning_owner(self):
