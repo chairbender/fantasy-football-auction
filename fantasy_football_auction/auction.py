@@ -14,14 +14,19 @@ class AuctionState(Enum):
 class Purchase:
     """
     Represents an owners purchase of a player
+
+    Attributes:
+        player (:obj:`Player`): player who was purchased
+        cost (:obj:`int`): amount paid
+        roster_slot (:obj:`RosterSlot`): roster position this player will occupy
     """
 
     def __init__(self, player, cost, roster_slot):
         """
 
-        :param player: player purchased
-        :param cost: cost paid
-        :param roster_slot: roster_slot the player will occupy
+        :param player (:obj:`Player`): player purchased
+        :param cost (:obj:`int`): cost paid
+        :param roster_slot (:obj:`RosterSlot`): roster_slot the player will occupy
         """
 
         self.player = player
@@ -32,14 +37,19 @@ class Purchase:
 class Owner:
     """
     Represents an owner during an auction
+
+    Attributes:
+        money (:obj:`Player`): player who was purchased
+        cost (:obj:`int`): amount paid
+        roster_slot (:obj:`RosterSlot`): roster position this player will occupy
     """
 
     def __init__(self, money, roster, owner_id):
         """
 
-        :param money: starting money
-        :param roster: roster slots this player needs to fill
-        :param owner_id: unique id of the owner to distinguish it from other owners, Must be [0,num owners)
+        :param money (:obj:`int`):  starting money
+        :param roster (:obj:`list` of :obj:`RosterSlot`): roster slots this owner needs to fill
+        :param owner_id (:obj:`int`): unique id of the owner to distinguish it from other owners, Must be [0,num owners)
         """
         self.money = money
         # create our own copy so we can sort by the number of accepted positions
@@ -53,8 +63,8 @@ class Owner:
         """
         indicate that the player was bought at the specified cost
 
-        :param player: player to buy
-        :param cost: cost to pay
+        :param player (:obj:`Player`): player to buy
+        :param cost (:obj:`int`): cost to pay
         """
         self.money -= cost
         # remove the roster slot that is the most specific
@@ -68,7 +78,7 @@ class Owner:
     def max_bid(self):
         """
 
-        :return: the maximum bid the player can make. (current money + 1) - number of slots left (since they have to pay
+        :return (:obj:`int`): the maximum bid the player can make. (current money + 1) - number of slots left (since they have to pay
         one dollar per slot and must fill all slots).
 
         """
@@ -77,9 +87,9 @@ class Owner:
     def can_buy(self, player, bid):
         """
 
-        :param player: player to check
-        :param bid: bid amount
-        :return: true iff this owner has space in the roster for the given player and has enough to
+        :param player (:obj:`Player`): player to check
+        :param bid (:obj:`int`): bid amount
+        :return (boolean): true iff this owner has space in the roster for the given player and has enough to
             bid the given amount
         """
 
@@ -88,7 +98,7 @@ class Owner:
     def remaining_picks(self):
         """
 
-        :return: the number of picks left for this owner to make until their roster is filled, 0 if full
+        :return (:obj:`int`): the number of picks left for this owner to make until their roster is filled, 0 if full
         """
 
         return len(self.roster)
@@ -96,8 +106,8 @@ class Owner:
     def possible_nominees(self, players):
         """
 
-        :param players: list of players to choose from
-        :return: a list of players that could be legally nominated by this owner
+        :param players (:obj:`list` of :obj:`Player`): list of players to choose from
+        :return (:obj:`list` of :obj:`Player`): a list of players that could be legally nominated by this owner
         """
 
         return list(filter(lambda player: self.can_buy(player, 1), players))
@@ -131,9 +141,6 @@ class Auction:
         bids: (:obj:`list` of :obj:`int`): each owner's most recent bid value for the current
             nominee. The index of this list represents the owner_id of the Owner who submitted the
             bid.
-
-
-
     """
 
     def __init__(self, players, num_owners, money, roster):
@@ -162,7 +169,7 @@ class Auction:
     def _winning_owner(self):
         """
 
-        :return: owner who bid the most
+        :return (:obj:`Owner`): owner who bid the most
         """
         winner_idx = -1
         price = 0
@@ -220,9 +227,9 @@ class Auction:
         Submits a bid for this tick for current player. This is not a guarantee that it will be accepted!
         If other players submit a higher bid this same tick, the bid won't be counted. Try again next tick if it's not
         too high!
-        :param owner_id: id of owner who is submitting the bid
-        :param bid: bid amount
-        :return: false iff choice was not allowed
+        :param owner_id (:obj:`int`): id of owner who is submitting the bid
+        :param bid (:obj:`int`): bid amount
+        :return (boolean): false iff choice was not allowed
         """
 
         # is it time to bid?
@@ -250,10 +257,10 @@ class Auction:
         """
         Nominates the player for auctioning.
 
-        :param owner_id: index of the owner who is nominating
-        :param player_idx: index of the player to nominate in the players array
-        :param bid: starting bid
-        :return false iff operation not allowed in the current state
+        :param owner_id (:obj:`int`): index of the owner who is nominating
+        :param player_idx (:obj:`int`): index of the player to nominate in the players array
+        :param bid (:obj:`int`): starting bid
+        :return (boolean) false iff operation not allowed in the current state
         """
 
         owner = self.owners[owner_id]
@@ -296,10 +303,10 @@ class Auction:
     def scores(self, starter_value):
         """
 
-        :param starter_value: floating point between 0 and 1 inclusive indicating how heavily the final score should
+        :param starter_value (:obj:`float`): floating point between 0 and 1 inclusive indicating how heavily the final score should
             be weighted between starter and bench. If 1, for example, bench value will be completely ignored when
             calculating winners. If 0, only bench value will be used to calculate winners
-        :return: an array of weighted final scores, with index corresponding to owner index and
+        :return (:obj:`float`): an array of weighted final scores, with index corresponding to owner index and
             element value corresponding to the weighted score (weighted based on starter_value)
         """
         # TODO: This is too much in one line
