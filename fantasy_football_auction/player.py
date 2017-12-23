@@ -7,6 +7,11 @@ class Player:
     """
     Represents an individual draftable player who has a Position,
     name, id, and value (as in how good they are to have on your team)
+
+    Attributes:
+        name (str): Name of the player
+        position (:obj:`Position`): position they play
+        value (:obj:`int`): integer value of the player indicating how valuable they are
     """
 
     def __init__(self, name, position, value):
@@ -22,9 +27,9 @@ class Player:
 
 def players_from_fantasypros_cheatsheet(file):
     """
-    :param file: path to the file containing the player values in the standard
+    :param file (:obj:`file`): path to the file containing the player values in the standard
     CSV format used for fantasypros cheatsheets
-    :return: a list of Players based on the info in the cheatsheet
+    :return (:obj:`list` of :obj:`Player`): a list of Players based on the info in the cheatsheet
     """
 
     with open(file, newline='') as csvfile:

@@ -21,13 +21,17 @@ class Position(Enum):
 class RosterSlot:
     """
     Represents a position in football.
+
+    Attributes:
+        positions (:obj:`list` of :obj:`Position`): list of positions that can occupy this slot
+        abbreviation (str): abbreviation to use to refer to this slot
     """
 
     def __init__(self, positions, abbreviation):
         """
 
-        :param positions: set of positions that can occupy this slot
-        :param abbreviation: abbreviation to use to refer to this roster slot
+        :param positions (:obj:`list` of :obj:`Position`): set of positions that can occupy this slot
+        :param abbreviation (str): abbreviation to use to refer to this roster slot
         """
         self.positions = positions
         self.abbreviation = abbreviation
@@ -35,15 +39,15 @@ class RosterSlot:
     def num_accepted(self):
         """
 
-        :return: number of different accepted positions
+        :return (:obj:`int`): number of different accepted positions
         """
         return len(self.positions)
 
     def accepts(self, player):
         """
 
-        :param player: player to check
-        :return: true iff this slot accepts the player, based on their position
+        :param player (:obj:`Player`): player to check
+        :return (boolean): true iff this slot accepts the player, based on their position
         """
         return player.position in self.positions
 
