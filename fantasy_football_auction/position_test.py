@@ -18,12 +18,12 @@ class RosterSlotTestCase(TestCase):
         pos1 = RosterSlot.QB
         pos3 = RosterSlot.WRRBTE
         pos11 = RosterSlot.BN
-        playerQB = Player("blah", Position.QB, 1)
-        playerWR = Player("blah", Position.WR, 1)
-        playerRB = Player("blah", Position.RB, 1)
-        playerTE = Player("blah", Position.TE, 1)
-        playerCB = Player("blah", Position.CB, 1)
-        playerS = Player("blah", Position.S, 1)
+        playerQB = Player("blahQB", Position.QB, 1)
+        playerWR = Player("blahWR", Position.WR, 1)
+        playerRB = Player("blahRB", Position.RB, 1)
+        playerTE = Player("blahTE", Position.TE, 1)
+        playerCB = Player("blahCB", Position.CB, 1)
+        playerS = Player("blahS", Position.S, 1)
         self.assertTrue(pos1.accepts(playerQB))
         self.assertTrue(pos3.accepts(playerWR))
         self.assertTrue(pos3.accepts(playerRB))
@@ -31,6 +31,11 @@ class RosterSlotTestCase(TestCase):
         self.assertTrue(pos11.accepts(playerQB))
         self.assertTrue(pos11.accepts(playerCB))
         self.assertTrue(pos11.accepts(playerS))
+        self.assertFalse(pos1.accepts(playerS))
+        self.assertFalse(pos1.accepts(playerS))
+        self.assertFalse(pos1.accepts(playerTE))
+        self.assertFalse(pos1.accepts(playerCB))
+        self.assertFalse(pos3.accepts(playerS))
 
     def test_equals(self):
         ros1 = RosterSlot({Position.QB}, "QB")

@@ -24,6 +24,9 @@ class Player:
         self.position = position
         self.value = value
 
+    def __eq__(self, other):
+        return isinstance(self, other.__class__) and self.name == other.name
+
 
 def players_from_fantasypros_cheatsheet(file):
     """

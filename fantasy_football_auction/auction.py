@@ -4,6 +4,27 @@ from functools import reduce
 
 from fantasy_football_auction.position import RosterSlot
 
+class Error(Exception):
+    """
+    Base class for all exceptions raised by this module
+    """
+
+class InsufficientFundsError(Error):
+    """
+    Owner tried to make a purchase with insufficient funds.
+    """
+
+class NoValidRosterSlotError(Error):
+    """
+    Owner tried to make a purchase but there isn't space in the roster
+    for this type of player.
+    """
+
+class AlreadyPurchasedError(Error):
+    """
+    Owner tried to buy the same player twice
+    """
+
 
 class AuctionState(Enum):
     """
@@ -69,7 +90,18 @@ class Owner:
 
         :param player (:obj:`Player`): player to buy
         :param cost (:obj:`int`): cost to pay
+
+        :raises InsufficientFundsError: if owner doesn't have the money
+        :raises NoValidRosterSlotError: if owner doesn't have a slot this player could fill
+        :raises AlreadyPurchasedError: if owner already bought this player
         """
+        if cost > self.max_bid():
+            raise InsufficientFundsError()
+        elif not any(roster_slot.accepts(player) for roster_slot in self.roster):
+            raise NoValidRosterSlotError()
+        elif any(purchase.player == player for purchase in self.purchases):
+            raise AlreadyPurchasedError()
+
         self.money -= cost
         # remove the roster slot that is the most specific
         # we know they are sorted by specificity
