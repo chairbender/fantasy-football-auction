@@ -40,9 +40,9 @@ class Purchase:
     Represents an owners purchase of a player
 
     Attributes:
-        player (:obj:`Player`): player who was purchased
-        cost (:obj:`int`): amount paid
-        roster_slot (:obj:`RosterSlot`): roster position this player will occupy
+        :ivar Player player: player who was purchased
+        :ivar int cost: amount paid
+        :ivar RosterSlot roster_slot: roster position this player will occupy
     """
 
     def __init__(self, player, cost, roster_slot):
@@ -88,8 +88,8 @@ class Owner:
         """
         indicate that the player was bought at the specified cost
 
-        :param player (:obj:`Player`): player to buy
-        :param cost (:obj:`int`): cost to pay
+        :param Player player: player to buy
+        :param int cost: cost to pay
 
         :raises InsufficientFundsError: if owner doesn't have the money
         :raises NoValidRosterSlotError: if owner doesn't have a slot this player could fill
@@ -123,8 +123,8 @@ class Owner:
     def can_buy(self, player, bid):
         """
 
-        :param player (:obj:`Player`): player to check
-        :param bid (:obj:`int`): bid amount
+        :param Player player: player to check
+        :param int bid: bid amount
         :return (boolean): true iff this owner has space in the roster for the given player and has enough to
             bid the given amount
         """
@@ -142,8 +142,8 @@ class Owner:
     def possible_nominees(self, players):
         """
 
-        :param players (:obj:`list` of :obj:`Player`): list of players to choose from
-        :return (:obj:`list` of :obj:`Player`): a list of players that could be legally nominated by this owner
+        :param list(Player) players: list of players to choose from
+        :return list(Player): a list of players that could be legally nominated by this owner
         """
 
         return [player for player in players if self.can_buy(player,1)]
@@ -171,12 +171,12 @@ class Owner:
     def score(self, starter_value):
         """
 
-        :param starter_value (:obj:`float`): floating point between 0 and 1
+        :param float starter_value: floating point between 0 and 1
             inclusive indicating how heavily the final score should
             be weighted between starter and bench. If 1, for example,
             bench value will be completely ignored when calculating
             winners. If 0, only bench value will be used to calculate winners
-        :return (:obj:`float`): the score this owner earns based on the
+        :return float: the score this owner earns based on the
             value of their players and the ratio of starter to bench value
         """
 
@@ -297,9 +297,9 @@ class Auction:
         Submits a bid for this tick for current player. This is not a guarantee that it will be accepted!
         If other players submit a higher bid this same tick, the bid won't be counted. Try again next tick if it's not
         too high!
-        :param owner_id (:obj:`int`): id of owner who is submitting the bid
-        :param bid (:obj:`int`): bid amount
-        :return (boolean): false iff choice was not allowed
+        :param int owner_id: id of owner who is submitting the bid
+        :param int bid: bid amount
+        :return boolean: false iff choice was not allowed
         """
 
         # is it time to bid?
@@ -327,10 +327,10 @@ class Auction:
         """
         Nominates the player for auctioning.
 
-        :param owner_id (:obj:`int`): index of the owner who is nominating
-        :param player_idx (:obj:`int`): index of the player to nominate in the players array
-        :param bid (:obj:`int`): starting bid
-        :return (boolean) false iff operation not allowed in the current state
+        :param int owner_id: index of the owner who is nominating
+        :param int player_idx: index of the player to nominate in the players array
+        :param int bid: starting bid
+        :return boolean false iff operation not allowed in the current state
         """
 
         owner = self.owners[owner_id]
@@ -373,7 +373,7 @@ class Auction:
     def scores(self, starter_value):
         """
 
-        :param starter_value (:obj:`float`): floating point between 0 and 1 inclusive indicating how heavily the final score should
+        :param float starter_value: floating point between 0 and 1 inclusive indicating how heavily the final score should
             be weighted between starter and bench. If 1, for example, bench value will be completely ignored when
             calculating winners. If 0, only bench value will be used to calculate winners
         :return (:obj:`float`): an array of weighted final scores, with index corresponding to owner index and

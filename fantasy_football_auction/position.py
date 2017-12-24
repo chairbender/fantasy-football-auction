@@ -46,8 +46,8 @@ class RosterSlot:
     def accepts(self, player):
         """
 
-        :param player (:obj:`Player`): player to check
-        :return (boolean): true iff this slot accepts the player, based on their position
+        :param Player player: player to check
+        :return boolean: true iff this slot accepts the player, based on their position
         """
         return player.position in self.positions
 
