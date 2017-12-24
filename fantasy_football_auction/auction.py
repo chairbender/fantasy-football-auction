@@ -114,7 +114,7 @@ class Owner:
         :return (:obj:`list` of :obj:`Player`): a list of players that could be legally nominated by this owner
         """
 
-        return list(filter(lambda player: self.can_buy(player, 1), players))
+        return [player for player in players if self.can_buy(player,1)]
 
     def start_value(self):
         """
