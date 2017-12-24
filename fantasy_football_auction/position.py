@@ -51,6 +51,12 @@ class RosterSlot:
         """
         return player.position in self.positions
 
+    def __eq__(self, other):
+        """
+        check if the slot is the same
+        """
+        return isinstance(self, other.__class__) and self.abbreviation == other.abbreviation
+
 
 RosterSlot.QB = RosterSlot({Position.QB}, "QB")
 RosterSlot.RB = RosterSlot({Position.RB}, "RB")

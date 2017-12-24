@@ -1,5 +1,8 @@
 import random
 from enum import Enum
+from functools import reduce
+
+from fantasy_football_auction.position import RosterSlot
 
 
 class AuctionState(Enum):
@@ -39,9 +42,10 @@ class Owner:
     Represents an owner during an auction
 
     Attributes:
-        money (:obj:`Player`): player who was purchased
-        cost (:obj:`int`): amount paid
-        roster_slot (:obj:`RosterSlot`): roster position this player will occupy
+        money (:obj:`int`): amount of money the owner has remaining
+        roster (:obj:`list` of :obj:`RosterSlot`): slots this player has left to fill
+        purchases (:obj:`list` of :obj:`Purchase`): purchases this owner has made
+        id (:obj:`int:): id of this owner.
     """
 
     def __init__(self, money, roster, owner_id):
@@ -111,6 +115,40 @@ class Owner:
         """
 
         return list(filter(lambda player: self.can_buy(player, 1), players))
+
+    def start_value(self):
+        """
+
+        :return (:obj:`float`): total value of all players in this owner's
+            starting lineup
+        """
+
+        return reduce(lambda x, y: x + y, [purchase.player.value for purchase in self.purchases
+                                           if purchase.roster_slot != RosterSlot.BN])
+
+    def bench_value(self):
+        """
+
+        :return (:obj:`float`): total value of all players in this owner's
+            bench lineup
+        """
+
+        return reduce(lambda x, y: x + y, [purchase.player.value for purchase in self.purchases
+                                           if purchase.roster_slot == RosterSlot.BN])
+
+    def score(self, starter_value):
+        """
+
+        :param starter_value (:obj:`float`): floating point between 0 and 1
+            inclusive indicating how heavily the final score should
+            be weighted between starter and bench. If 1, for example,
+            bench value will be completely ignored when calculating
+            winners. If 0, only bench value will be used to calculate winners
+        :return (:obj:`float`): the score this owner earns based on the
+            value of their players and the ratio of starter to bench value
+        """
+
+        return self.start_value() * starter_value - self.bench_value() * (1 - starter_value)
 
 
 class Auction:
@@ -309,9 +347,8 @@ class Auction:
         :return (:obj:`float`): an array of weighted final scores, with index corresponding to owner index and
             element value corresponding to the weighted score (weighted based on starter_value)
         """
-        # TODO: This is too much in one line
-        return map(lambda owner: owner.start_value() * starter_value - owner.bench_value() * (1 - starter_value),
-                   self.owners)
+
+        return [owner.score(starter_value) for owner in self.owners]
 
     def __repr__(self):
         return self.__str__()
