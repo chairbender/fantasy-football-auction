@@ -16,9 +16,9 @@ class Player:
 
     def __init__(self, name, position, value):
         """
-        :param name: name of this player
-        :param position: Position this player plays
-        :param value: integer value of this player (how good they are)
+        :param name (str): name of this player
+        :param position (:obj:`Position`): Position this player plays
+        :param value (:obj:`int`): integer value of this player (how good they are)
         """
         self.name = name
         self.position = position
@@ -33,6 +33,8 @@ def players_from_fantasypros_cheatsheet(file):
     """
 
     with open(file, newline='') as csvfile:
+        #Note - considered using a generator for this, but I don't want to hold the file open
+        # for a long time and it's pretty small anyway.
         players = []
         playerindex = 0
         playerreader = reader(csvfile, delimiter=',')
