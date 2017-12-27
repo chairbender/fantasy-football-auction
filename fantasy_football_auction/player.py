@@ -16,9 +16,9 @@ class Player:
 
     def __init__(self, name, position, value):
         """
-        :param name (str): name of this player
-        :param position (:obj:`Position`): Position this player plays
-        :param value (:obj:`int`): integer value of this player (how good they are)
+        :param str name: name of this player
+        :param Position position: Position this player plays
+        :param int value: integer value of this player (how good they are)
         """
         self.name = name
         self.position = position
@@ -32,7 +32,7 @@ def players_from_fantasypros_cheatsheet(file):
     """
     :param File file: path to the file containing the player values in the standard
     CSV format used for fantasypros cheatsheets
-    :return (:obj:`list` of :obj:`Player`): a list of Players based on the info in the cheatsheet
+    :return list(Player): a list of Players based on the info in the cheatsheet
     """
 
     with open(file, newline='') as csvfile:

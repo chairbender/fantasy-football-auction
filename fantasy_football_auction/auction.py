@@ -63,18 +63,18 @@ class Owner:
     Represents an owner during an auction
 
     Attributes:
-        money (:obj:`int`): amount of money the owner has remaining
-        roster (:obj:`list` of :obj:`RosterSlot`): slots this player has left to fill
-        purchases (:obj:`list` of :obj:`Purchase`): purchases this owner has made
-        id (:obj:`int:): id of this owner.
+        :ivar int money : amount of money the owner has remaining
+        :ivar list(RosterSlot) roster: slots this player has left to fill
+        :ivar list(Purchase) purchases: purchases this owner has made
+        :ivar int id: id of this owner.
     """
 
     def __init__(self, money, roster, owner_id):
         """
 
-        :param money (:obj:`int`):  starting money
-        :param roster (:obj:`list` of :obj:`RosterSlot`): roster slots this owner needs to fill
-        :param owner_id (:obj:`int`): unique id of the owner to distinguish it from other owners, Must be [0,num owners)
+        :param int money:  starting money
+        :param list(RosterSlot) roster: roster slots this owner needs to fill
+        :param int owner_id: unique id of the owner to distinguish it from other owners, Must be [0,num owners)
         """
         self.money = money
         # create our own copy so we can sort by the number of accepted positions
@@ -114,7 +114,7 @@ class Owner:
     def max_bid(self):
         """
 
-        :return (:obj:`int`): the maximum bid the player can make. (current money + 1) - number of slots left (since they have to pay
+        :return int: the maximum bid the player can make. (current money + 1) - number of slots left (since they have to pay
         one dollar per slot and must fill all slots).
 
         """
@@ -125,7 +125,7 @@ class Owner:
 
         :param Player player: player to check
         :param int bid: bid amount
-        :return (boolean): true iff this owner has space in the roster for the given player and has enough to
+        :return boolean: true iff this owner has space in the roster for the given player and has enough to
             bid the given amount
         """
 
@@ -134,7 +134,7 @@ class Owner:
     def remaining_picks(self):
         """
 
-        :return (:obj:`int`): the number of picks left for this owner to make until their roster is filled, 0 if full
+        :return int: the number of picks left for this owner to make until their roster is filled, 0 if full
         """
 
         return len(self.roster)
@@ -151,7 +151,7 @@ class Owner:
     def start_value(self):
         """
 
-        :return (:obj:`float`): total value of all players in this owner's
+        :return float: total value of all players in this owner's
             starting lineup
         """
 
@@ -161,7 +161,7 @@ class Owner:
     def bench_value(self):
         """
 
-        :return (:obj:`float`): total value of all players in this owner's
+        :return float: total value of all players in this owner's
             bench lineup
         """
 
@@ -194,21 +194,21 @@ class Auction:
     team.
 
     Attributes:
-        owners (:obj:`list` of :obj:`Owner`): all of the owners in the game
-        players (:obj:`list` of :obj:`Player`): all of the draftable players in the game
-        undrafted_players (:obj:`list` of :obj:`Player`): all of the undrafted players in the current
+        :ivar list(Owner) owners: all of the owners in the game
+        :ivar list(Player) players: all of the draftable players in the game
+        :ivar list(Player) undrafted_players: all of the undrafted players in the current
             game
-        money (:obj:`int`): starting money of each owner
-        roster (:obj:`list` of :obj:`RosterPosition`): all of the slots that each owner needs
+        :ivar int money: starting money of each owner
+        :ivar list(RosterPosition) roster: all of the slots that each owner needs
             to fill in this game
-        state (:obj:`AuctionState`): current state of the auction game FSM
-        turn_index (:obj:`int`): index of owner whose turn it is to nominate a player
+        :ivar AuctionState state: current state of the auction game FSM
+        :ivar int turn_index: index of owner whose turn it is to nominate a player
             for auction
-        nominee (:obj:`Player`): current player who is up for auction
-        tickbids (:obj:`list` of :obj:`int`): current bids that have been submitted on
+        :ivar Player nominee: current player who is up for auction
+        :ivar list(int) tickbids: current bids that have been submitted on
             a given tick of the game. The index of this list represents the owner_id of the Owner
             who submitted the bid.
-        bids: (:obj:`list` of :obj:`int`): each owner's most recent bid value for the current
+        :ivar list(int) bids: each owner's most recent bid value for the current
             nominee. The index of this list represents the owner_id of the Owner who submitted the
             bid.
     """
@@ -217,10 +217,10 @@ class Auction:
         """
         Starts the auction with the specified settings.
 
-        :param players (:obj:`list` of :obj:`Player`): Players in this auction
-        :param num_owners (:obj:`int`): number of owners. Owners are referenced by integer id.
-        :param money (:obj:`int`): integer dollar amount of money each player has
-        :param roster (:obj:`list` of :obj:`RosterPosition`):
+        :param list(Player) players: Players in this auction
+        :param int num_owners number of owners. Owners are referenced by integer id.
+        :param int money: integer dollar amount of money each player has
+        :param list(RosterPosition) roster:
             list of RosterPositions each player needs to fill
         """
         self.owners = [Owner(money, roster, i) for i in range(num_owners)]
@@ -239,7 +239,7 @@ class Auction:
     def _winning_owner(self):
         """
 
-        :return (:obj:`Owner`): owner who bid the most
+        :return Owner: owner who bid the most
         """
         winner_idx = -1
         price = 0
@@ -330,7 +330,7 @@ class Auction:
         :param int owner_id: index of the owner who is nominating
         :param int player_idx: index of the player to nominate in the players array
         :param int bid: starting bid
-        :return boolean false iff operation not allowed in the current state
+        :return boolean: false iff operation not allowed in the current state
         """
 
         owner = self.owners[owner_id]
@@ -376,7 +376,7 @@ class Auction:
         :param float starter_value: floating point between 0 and 1 inclusive indicating how heavily the final score should
             be weighted between starter and bench. If 1, for example, bench value will be completely ignored when
             calculating winners. If 0, only bench value will be used to calculate winners
-        :return (:obj:`float`): an array of weighted final scores, with index corresponding to owner index and
+        :return float: an array of weighted final scores, with index corresponding to owner index and
             element value corresponding to the weighted score (weighted based on starter_value)
         """
 

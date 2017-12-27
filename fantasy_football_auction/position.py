@@ -23,15 +23,15 @@ class RosterSlot:
     Represents a position in football.
 
     Attributes:
-        positions (:obj:`list` of :obj:`Position`): list of positions that can occupy this slot
-        abbreviation (str): abbreviation to use to refer to this slot
+        :ivar list(Position) positions: list of positions that can occupy this slot
+        :ivar str abbreviation: abbreviation to use to refer to this slot
     """
 
     def __init__(self, positions, abbreviation):
         """
 
-        :param positions (:obj:`list` of :obj:`Position`): set of positions that can occupy this slot
-        :param abbreviation (str): abbreviation to use to refer to this roster slot
+        :param list(Position) positions: set of positions that can occupy this slot
+        :param str abbreviation: abbreviation to use to refer to this roster slot
         """
         self.positions = positions
         self.abbreviation = abbreviation
@@ -39,7 +39,7 @@ class RosterSlot:
     def num_accepted(self):
         """
 
-        :return (:obj:`int`): number of different accepted positions
+        :return int: number of different accepted positions
         """
         return len(self.positions)
 
