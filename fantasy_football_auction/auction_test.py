@@ -27,8 +27,8 @@ class OwnerTestCase(TestCase):
 
         with self.assertRaises(AlreadyPurchasedError):
             owner.buy(player_qb, 3)
-            playerQBDupe = Player("blahQB", Position.QB, 1)
-            owner.buy(playerQBDupe, 3)
+            player_qb_dupe = Player("blahQB", Position.QB, 1)
+            owner.buy(player_qb_dupe, 3)
 
         owner = Owner(20, [RosterSlot.QB, RosterSlot.TE], 0)
         with self.assertRaises(InsufficientFundsError):

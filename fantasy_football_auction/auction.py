@@ -4,21 +4,25 @@ from functools import reduce
 
 from fantasy_football_auction.position import RosterSlot
 
+
 class Error(Exception):
     """
     Base class for all exceptions raised by this module
     """
+
 
 class InsufficientFundsError(Error):
     """
     Owner tried to make a purchase with insufficient funds.
     """
 
+
 class NoValidRosterSlotError(Error):
     """
     Owner tried to make a purchase but there isn't space in the roster
     for this type of player.
     """
+
 
 class AlreadyPurchasedError(Error):
     """
@@ -35,29 +39,6 @@ class AuctionState(Enum):
     DONE = 2
 
 
-class Purchase:
-    """
-    Represents an owners purchase of a player
-
-    Attributes:
-        :ivar Player player: player who was purchased
-        :ivar int cost: amount paid
-        :ivar RosterSlot roster_slot: roster position this player will occupy
-    """
-
-    def __init__(self, player, cost, roster_slot):
-        """
-
-        :param player (:obj:`Player`): player purchased
-        :param cost (:obj:`int`): cost paid
-        :param roster_slot (:obj:`RosterSlot`): roster_slot the player will occupy
-        """
-
-        self.player = player
-        self.cost = cost
-        self.roster_slot = roster_slot
-
-
 class OwnerRosterSlot(RosterSlot):
     """
     Just like a RosterSlot, but has the possibility of having a player occupying or not occupying it.
@@ -65,6 +46,7 @@ class OwnerRosterSlot(RosterSlot):
     Attributes:
         :ivar Player occupant: player which has filled this slot. None if not filled.
     """
+
     @classmethod
     def from_roster_slot(cls, roster_slot):
         """
@@ -82,7 +64,6 @@ class OwnerRosterSlot(RosterSlot):
         """
         super(OwnerRosterSlot, self).__init__(positions, abbreviation)
         self.occupant = None
-
 
 
 class Owner:
@@ -170,8 +151,8 @@ class Owner:
     def max_bid(self):
         """
 
-        :return int: the maximum bid the player can make. (current money + 1) - number of slots left (since they have to pay
-        one dollar per slot and must fill all slots).
+        :return int: the maximum bid the player can make. (current money + 1) - number of slots left
+        (since they have to pay one dollar per slot and must fill all slots).
 
         """
         return (self.money + 1) - self.remaining_picks()
@@ -186,8 +167,8 @@ class Owner:
         """
 
         return any(roster_slot.accepts(player) for roster_slot in self.roster) and \
-            bid <= self.max_bid() and \
-            not self._is_owned(player)
+               bid <= self.max_bid() and \
+               not self._is_owned(player)
 
     def remaining_picks(self):
         """
@@ -293,6 +274,7 @@ class Auction:
         self.nominee = None
         self.tickbids = [0] * num_owners
         self.bids = [0] * num_owners
+        self.bid = None
 
     def _winning_owner(self):
         """
@@ -431,8 +413,8 @@ class Auction:
     def scores(self, starter_value):
         """
 
-        :param float starter_value: floating point between 0 and 1 inclusive indicating how heavily the final score should
-            be weighted between starter and bench. If 1, for example, bench value will be completely ignored when
+        :param float starter_value: floating point between 0 and 1 inclusive indicating how heavily the final score
+            should be weighted between starter and bench. If 1, for example, bench value will be completely ignored when
             calculating winners. If 0, only bench value will be used to calculate winners
         :return float: an array of weighted final scores, with index corresponding to owner index and
             element value corresponding to the weighted score (weighted based on starter_value)

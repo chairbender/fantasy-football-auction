@@ -36,7 +36,7 @@ def players_from_fantasypros_cheatsheet(file):
     """
 
     with open(file, newline='') as csvfile:
-        #Note - considered using a generator for this, but I don't want to hold the file open
+        # Note - considered using a generator for this, but I don't want to hold the file open
         # for a long time and it's pretty small anyway.
         players = []
         playerindex = 0
