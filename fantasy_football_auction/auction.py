@@ -2,8 +2,30 @@
 This module contains classes related to the running and logic of the actual auction game. This all lives in the
 Auction class.
 """
-
 import random
+from enum import Enum
+from fantasy_football_auction.owner import Owner
+
+class Error(Exception):
+    """
+    Base class for all exceptions raised by this module
+    """
+
+
+class InvalidActionError(Error):
+    """
+    Someone tried to do something that isn't allowed by the rules of the game. See the message for details.
+    """
+
+
+
+class AuctionState(Enum):
+    """
+    A state for the auction to be in
+    """
+    NOMINATE = 0
+    BID = 1
+    DONE = 2
 
 
 class Auction:
@@ -17,23 +39,24 @@ class Auction:
     team.
 
     Attributes:
-        :ivar list(Owner) owners: all of the owners in the game
-        :ivar list(Player) players: all of the draftable players in the game
+        :ivar list(Owner) owners: all of the owners in the game. Read only.
+        :ivar list(Player) players: all of the draftable players in the game. Read only.
         :ivar list(Player) undrafted_players: all of the undrafted players in the current
-            game
-        :ivar int money: starting money of each owner
+            game. Read only.
+        :ivar int money: starting money of each owner. Read only.
         :ivar list(RosterPosition) roster: all of the slots that each owner needs
-            to fill in this game
-        :ivar AuctionState state: current state of the auction game FSM
+            to fill in this game. Read only.
+        :ivar AuctionState state: current state of the auction game FSM. Read only.
         :ivar int turn_index: index of owner whose turn it is to nominate a player
-            for auction
-        :ivar Player nominee: current player who is up for auction
+            for auction. Read only.
+        :ivar Player nominee: current player who is up for auction. Read only.
         :ivar list(int) tickbids: current bids that have been submitted on
             a given tick of the game. The index of this list represents the owner_id of the Owner
-            who submitted the bid.
+            who submitted the bid. Read only.
         :ivar list(int) bids: each owner's most recent bid value for the current
             nominee. The index of this list represents the owner_id of the Owner who submitted the
-            bid.
+            bid. Read only.
+        :ivar int bid: current bid amount for the current nominee. Read only.
     """
 
     def __init__(self, players, num_owners, money, roster):

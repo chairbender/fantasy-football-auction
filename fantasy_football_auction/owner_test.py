@@ -1,4 +1,4 @@
-from unittest import TestCase, main
+from unittest import TestCase
 
 from fantasy_football_auction.owner import Owner, InsufficientFundsError, NoValidRosterSlotError, \
     AlreadyPurchasedError

@@ -35,15 +35,6 @@ class AlreadyPurchasedError(Error):
     """
 
 
-class AuctionState(Enum):
-    """
-    A state for the auction to be in
-    """
-    NOMINATE = 0
-    BID = 1
-    DONE = 2
-
-
 class OwnerRosterSlot(RosterSlot):
     """
     Just like a RosterSlot, but has the possibility of having a player occupying or not occupying it.
@@ -139,13 +130,13 @@ class Owner:
             raise InsufficientFundsError()
         elif not any(roster_slot.accepts(player) and roster_slot.occupant is None for roster_slot in self.roster):
             raise NoValidRosterSlotError()
-        elif self._is_owned(player):
+        elif self.owns(player):
             raise AlreadyPurchasedError()
 
         self.money -= cost
         self._slot_in(player)
 
-    def _is_owned(self, player):
+    def owns(self, player):
         """
 
         :param Player player: player to check
@@ -173,7 +164,7 @@ class Owner:
 
         return any(roster_slot.accepts(player) for roster_slot in self.roster) and \
                bid <= self.max_bid() and \
-               not self._is_owned(player)
+               not self.owns(player)
 
     def remaining_picks(self):
         """
