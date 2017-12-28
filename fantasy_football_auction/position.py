@@ -1,3 +1,8 @@
+"""
+This module holds logic describing the various positions on a football team and the slots which need to be filled
+on a fantasy football team
+"""
+
 from enum import Enum
 
 
@@ -20,7 +25,7 @@ class Position(Enum):
 
 class RosterSlot:
     """
-    Represents a position in football.
+    Represents a slot on a fantasy football team which can accept various positions.
 
     Attributes:
         :ivar list(Position) positions: list of positions that can occupy this slot

@@ -1,10 +1,10 @@
-from fantasy_football_auction.auction import Auction
-from fantasy_football_auction.position import RosterSlot
-from fantasy_football_auction.player import players_from_fantasypros_cheatsheet
-
 """
 Some simple default values to help use this
 """
+
+from fantasy_football_auction.auction import Auction
+from fantasy_football_auction.position import RosterSlot
+from fantasy_football_auction.player import players_from_fantasypros_cheatsheet
 
 
 def default_roster():

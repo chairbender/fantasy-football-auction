@@ -1,5 +1,8 @@
-from csv import reader
+"""
+This module holds logic relating to individual football players (the people who are bought in the auction).
+"""
 
+from csv import reader
 from fantasy_football_auction.position import Position
 
 
