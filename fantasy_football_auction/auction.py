@@ -4,7 +4,9 @@ Auction class.
 """
 import random
 from enum import Enum
+
 from fantasy_football_auction.owner import Owner
+
 
 class Error(Exception):
     """
@@ -16,7 +18,6 @@ class InvalidActionError(Error):
     """
     Someone tried to do something that isn't allowed by the rules of the game. See the message for details.
     """
-
 
 
 class AuctionState(Enum):
@@ -64,7 +65,7 @@ class Auction:
         Starts the auction with the specified settings.
 
         :param list(Player) players: Players in this auction
-        :param int num_owners number of owners. Owners are referenced by integer id.
+        :param int num_owners: number of owners. Owners are referenced by integer id.
         :param int money: integer dollar amount of money each player has
         :param list(RosterPosition) roster:
             list of RosterPositions each player needs to fill

@@ -163,8 +163,8 @@ class Owner:
         """
 
         return any(roster_slot.accepts(player) for roster_slot in self.roster) and \
-               bid <= self.max_bid() and \
-               not self.owns(player)
+            bid <= self.max_bid() and \
+            not self.owns(player)
 
     def remaining_picks(self):
         """

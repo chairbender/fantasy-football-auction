@@ -10,7 +10,7 @@ class AuctionTestCase(TestCase):
     def setUp(self):
         # Starts a 3 player game, 200 to spend
         roster_slots = [RosterSlot.QB, RosterSlot.RB, RosterSlot.RB, RosterSlot.WR, RosterSlot.WR, RosterSlot.WRRBTE,
-            RosterSlot.TE, RosterSlot.K, RosterSlot.DST, RosterSlot.BN, RosterSlot.BN]
+                        RosterSlot.TE, RosterSlot.K, RosterSlot.DST, RosterSlot.BN, RosterSlot.BN]
         self.players = [
             Player("GoodQB1", Position.QB, 35),
             Player("GoodQB2", Position.QB, 30),

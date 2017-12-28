@@ -84,8 +84,8 @@ class OwnerTestCase(TestCase):
         self.assertFalse(owner.can_buy(player_te, 3))
 
         owner.buy(player_qb, 3)
-        playerQBDupe = Player("blahQB", Position.QB, 1)
-        self.assertFalse(owner.can_buy(playerQBDupe, 1))
+        player_qb_dupe = Player("blahQB", Position.QB, 1)
+        self.assertFalse(owner.can_buy(player_qb_dupe, 1))
 
         owner = Owner(20, [RosterSlot.QB, RosterSlot.TE], 0)
         owner.buy(player_qb, 10)
