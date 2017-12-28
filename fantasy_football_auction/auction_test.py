@@ -63,13 +63,13 @@ class AuctionTestCase(TestCase):
         :param name: name of player to get index of
         :return int: index of the player in the players array.
         """
-        return [x for x in self.players if x.name == name][0]
+        return [index for index, player in enumerate(self.players) if player.name == name][0]
 
     def test_auction(self):
         # play a mock game
         # To start, it should be owner 0's turn to nominate
-        self.assertEquals(AuctionState.NOMINATE, self.auction.state)
-        self.assertEquals(0, self.auction.turn_index)
+        self.assertEqual(AuctionState.NOMINATE, self.auction.state)
+        self.assertEqual(0, self.auction.turn_index)
 
         # let's be 'that guy' and nominate a kicker first.
         self.auction.nominate(0, self.player("GoodK1"), 1)
@@ -85,18 +85,18 @@ class AuctionTestCase(TestCase):
         self.auction.nominate(0, self.player("GoodK1"), 2)
         self.auction.tick()
         # check if the nomination went through
-        self.assertEquals(AuctionState.BID, self.auction.state)
-        self.assertEquals(self.player("GoodK1"), self.auction.nominee)
-        self.assertEquals([1, 0, 0], self.auction.bids)
-        self.assertEquals(1, self.auction.bid)
+        self.assertEqual(AuctionState.BID, self.auction.state)
+        self.assertEqual(self.players[self.player("GoodK1")], self.auction.nominee)
+        self.assertEqual([2, 0, 0], self.auction.bids)
+        self.assertEqual(2, self.auction.bid)
 
         # nominating at this point should not be allowed by anyone
         with self.assertRaises(InvalidActionError):
-            self.auction.nominate(0, self.player("GoodK1"), 1)
+            self.auction.nominate(0, self.player("GoodK1"), 3)
         with self.assertRaises(InvalidActionError):
-            self.auction.nominate(1, self.player("GoodK1"), 1)
+            self.auction.nominate(1, self.player("GoodK1"), 3)
         with self.assertRaises(InvalidActionError):
-            self.auction.nominate(2, self.player("GoodK1"), 1)
+            self.auction.nominate(2, self.player("GoodK1"), 3)
 
         # bidding at or under the current bid amount should cause an error
         with self.assertRaises(InvalidActionError):
@@ -109,23 +109,23 @@ class AuctionTestCase(TestCase):
         self.auction.place_bid(1, 2)
         self.auction.place_bid(2, 3)
         self.auction.tick()
-        self.assertEquals(AuctionState.BID, self.auction.state)
-        self.assertEquals(self.player("GoodK1"), self.auction.nominee)
-        self.assertEquals([1, 0, 3], self.auction.bids)
-        self.assertEquals(3, self.auction.bid)
+        self.assertEqual(AuctionState.BID, self.auction.state)
+        self.assertEqual(self.players[self.player("GoodK1")], self.auction.nominee)
+        self.assertEqual([2, 0, 3], self.auction.bids)
+        self.assertEqual(3, self.auction.bid)
 
         # should be able to raise bid amount for no reason
         self.auction.place_bid(2, 4)
         self.auction.tick()
-        self.assertEquals(AuctionState.BID, self.auction.state)
-        self.assertEquals(self.player("GoodK1"), self.auction.nominee)
-        self.assertEquals([1, 0, 4], self.auction.bids)
-        self.assertEquals(4, self.auction.bid)
+        self.assertEqual(AuctionState.BID, self.auction.state)
+        self.assertEqual(self.players[self.player("GoodK1")], self.auction.nominee)
+        self.assertEqual([2, 0, 4], self.auction.bids)
+        self.assertEqual(4, self.auction.bid)
 
         # no more bids, it should make the purchase and move to the next nomination
         self.auction.tick()
-        self.assertEquals(AuctionState.NOMINATE, self.auction.state)
-        self.assertEquals(1, self.auction.turn_index)
+        self.assertEqual(AuctionState.NOMINATE, self.auction.state)
+        self.assertEqual(1, self.auction.turn_index)
         owner2 = self.auction.owners[2]
         self.assertEqual(196, owner2.money)
         self.assertTrue(owner2.owns(self.players[self.player("GoodK1")]))
@@ -141,35 +141,36 @@ class AuctionTestCase(TestCase):
         with self.assertRaises(InvalidActionError):
             self.auction.nominate(0, self.player("GoodWR2"), 15)
         with self.assertRaises(InvalidActionError):
-            self.auction.nominate(2, self.player("GoodRB"), 10)
+            self.auction.nominate(2, self.player("GoodRB1"), 10)
 
         self.auction.tick()
         # check if the nomination went through
-        self.assertEquals(AuctionState.BID, self.auction.state)
-        self.assertEquals(self.player("GoodWR1"), self.auction.nominee)
-        self.assertEquals([0, 20, 0], self.auction.bids)
-        self.assertEquals(20, self.auction.bid)
+        self.assertEqual(AuctionState.BID, self.auction.state)
+        self.assertEqual(self.players[self.player("GoodWR1")], self.auction.nominee)
+        self.assertEqual([0, 20, 0], self.auction.bids)
+        self.assertEqual(20, self.auction.bid)
 
         # let player 1 and 2 go back and forth a bit
-        self.auction.bid(1, 21)
+        self.auction.place_bid(1, 21)
         self.auction.tick()
-        self.auction.bid(2, 22)
+        self.auction.place_bid(2, 22)
         self.auction.tick()
-        self.auction.bid(1, 25)
+        self.auction.place_bid(1, 25)
         self.auction.tick()
-        self.auction.bid(1, 30)
+        self.auction.place_bid(1, 30)
         self.auction.tick()
-        self.auction.bid(2, 40)
+        self.auction.place_bid(2, 40)
         self.auction.tick()
-        self.assertEquals(AuctionState.BID, self.auction.state)
-        self.assertEquals(self.player("GoodWR1"), self.auction.nominee)
-        self.assertEquals([0, 30, 40], self.auction.bids)
-        self.assertEquals(40, self.auction.bid)
+        self.assertEqual(AuctionState.BID, self.auction.state)
+        self.assertEqual(self.players[self.player("GoodWR1")], self.auction.nominee)
+        self.assertEqual([0, 30, 40], self.auction.bids)
+        self.assertEqual(40, self.auction.bid)
         # let p2 have it for 40
         self.auction.tick()
+        self.assertTrue(owner2.owns(self.players[self.player("GoodWR1")]))
 
-        self.assertEquals(AuctionState.NOMINATE, self.auction.state)
-        self.assertEquals(2, self.auction.turn_index)
+        self.assertEqual(AuctionState.NOMINATE, self.auction.state)
+        self.assertEqual(2, self.auction.turn_index)
         owner2 = self.auction.owners[2]
         self.assertEqual(156, owner2.money)
         self.assertTrue(owner2.owns(self.players[self.player("GoodWR1")]))

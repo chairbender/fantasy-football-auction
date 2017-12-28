@@ -146,29 +146,21 @@ class Auction:
         too high!
         :param int owner_id: id of owner who is submitting the bid
         :param int bid: bid amount
-        :return boolean: false iff choice was not allowed
+
+        :raise InvalidActionError: if the action is not allowed according to the rules. See the error message
+            for details.
         """
 
-        # is it time to bid?
         if self.state != AuctionState.BID:
-            return False
-
-        # is bid greater than current bid amount
-        if self.bid > bid:
-            return False
-
-        # has bid already been submitted this tick by this player?
-        if self.tickbids[owner_id] > 0:
-            return False
-
-        # can this owner add the player to their roster
-        if not self.owners[owner_id].can_buy(self.nominee, bid):
-            return False
+            raise InvalidActionError("Bid was attempted, but it is not currently time to submit bids.")
+        elif self.bid > bid:
+            raise InvalidActionError("Bid amount " + str(bid) + " must be greater than current bid of " + str(self.bid))
+        elif not self.owners[owner_id].can_buy(self.nominee, bid):
+            raise InvalidActionError("The owner cannot afford this bid or cannot actually buy this player (due to "
+                                     "not having any free slots)")
 
         # success, add their bid to the current tick
         self.tickbids[owner_id] = bid
-
-        return True
 
     def nominate(self, owner_id, player_idx, bid):
         """
@@ -177,45 +169,34 @@ class Auction:
         :param int owner_id: index of the owner who is nominating
         :param int player_idx: index of the player to nominate in the players array
         :param int bid: starting bid
-        :return boolean: false iff operation not allowed in the current state
+
+        :raise InvalidActionError: if the action is not allowed according to the rules. See the error message
+            for details.
         """
 
         owner = self.owners[owner_id]
         nominated_player = self.players[player_idx]
 
-        # Is it time to nominate?
         if self.state != AuctionState.NOMINATE:
-            return False
-
-        # Is the player draftable?
-        if nominated_player not in self.undrafted_players:
-            return False
-
-        # Is it this owner's turn to nominate?
-        if owner_id != self.turn_index:
-            return False
-
-        # Is the owner allowed to bid that much?
-        if bid > owner.max_bid():
-            return False
-
-        # has the owner already nominated
-        if self.nominee is not None:
-            return False
-
-        # bid must be 1 or higher
-        if bid < 1:
-            return False
-
-        # can any owner actually get this player
-        if not any(owner.can_buy(nominated_player, bid) for owner in self.owners):
-            return False
+            raise InvalidActionError("Auction state is not NOMINATE, so nomination is not allowed")
+        elif self.turn_index != owner_id:
+            raise InvalidActionError("Owner " + str(owner_id) + " tried to nominate, but it is currently " +
+                                     str(self.turn_index) + "'s turn")
+        elif nominated_player not in self.undrafted_players:
+            raise InvalidActionError("The player with index " + str(player_idx) + ", named " +
+                                     nominated_player.name +
+                                     " has already been purchased and cannot be nominated.")
+        elif bid > owner.max_bid():
+            raise InvalidActionError("Bid amount was " + str(bid) + " but this owner can only bid a maximum of " +
+                                     str(owner.max_bid()))
+        elif bid < 1:
+            raise InvalidActionError("Bid amount was " + str(bid) + " but must be greater than 1")
+        elif not any(owner.can_buy(nominated_player, bid) for owner in self.owners):
+            raise InvalidActionError("No owner can actually buy this player, so nomination is not allowed.")
 
         # nomination successful, bidding time
         self.nominee = nominated_player
         self.bid = bid
-
-        return True
 
     def scores(self, starter_value):
         """
