@@ -194,9 +194,12 @@ class Owner:
         :return float: total value of all players in this owner's
             bench lineup
         """
-
-        return reduce(lambda x, y: x + y, [roster_slot.occupant.value for roster_slot in self.roster
-                                           if roster_slot == RosterSlot.BN])
+        if not any(roster_slot == RosterSlot.BN for roster_slot in self.roster):
+            # no bench slots
+            return 0
+        else:
+            return reduce(lambda x, y: x + y, [roster_slot.occupant.value for roster_slot in self.roster
+                                               if roster_slot == RosterSlot.BN])
 
     def score(self, starter_value):
         """

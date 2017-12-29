@@ -117,7 +117,6 @@ class Auction:
             if bid > price:
                 price = bid
                 winner_idx = idx
-        assert winner_idx > -1
         return winner_idx
 
     def nominee_index(self):
