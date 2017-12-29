@@ -162,7 +162,7 @@ class Owner:
             bid the given amount and has not already purchased this player
         """
 
-        return any(roster_slot.accepts(player) for roster_slot in self.roster) and \
+        return any(roster_slot.accepts(player) and roster_slot.occupant is None for roster_slot in self.roster) and \
             bid <= self.max_bid() and \
             not self.owns(player)
 

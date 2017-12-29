@@ -89,6 +89,13 @@ class Auction:
 
         :return Owner: owner who bid the most
         """
+        return self.owners[self.winning_owner_index()]
+
+    def winning_owner_index(self):
+        """
+
+        :return Owner: owner who bid the most
+        """
         winner_idx = -1
         price = 0
         for idx, bid in enumerate(self.bids):
@@ -96,7 +103,17 @@ class Auction:
                 price = bid
                 winner_idx = idx
         assert winner_idx > -1
-        return self.owners[winner_idx]
+        return winner_idx
+
+    def nominee_index(self):
+        """
+
+        :return: int: index of the current player nominee in the players list. -1 if no nominee.
+        """
+        for idx, player in enumerate(self.players):
+            if player == self.nominee:
+                return idx
+        return -1
 
     def tick(self):
         """
@@ -104,17 +121,15 @@ class Auction:
         game state using the other methods.
         """
         if self.state == AuctionState.NOMINATE:
-            # if no nominee submitted, pick the next highest valued player for $1
+            # if no nominee submitted, exception
             if self.nominee is None:
-                self.nominee = self.undrafted_players[0]
-                self.bid = 1
+                raise InvalidActionError("Tick was invoked during nomination but no nominee was selected.")
             self.state = AuctionState.BID
             # initialize bids array to hold each owner's bid
             # this holds the latest bids submitted for the current bidding phase
             self.bids = [self.bid if i == self.turn_index else 0 for i in range(len(self.owners))]
             # this holds the bids submitted on a given tick
             self.tickbids = [0] * len(self.owners)
-            self.turn_index = self.turn_index + 1 % len(self.owners)
         elif self.state == AuctionState.BID:
             # If no new bids submitted, we're done with this bid and the player gets what they bid for
             if not any(bid > 0 for bid in self.tickbids):
@@ -122,11 +137,19 @@ class Auction:
                 winner.buy(self.nominee, self.bid)
                 self.undrafted_players.remove(self.nominee)
                 self.nominee = None
-                # check if we're done
-                if any(owner.remaining_picks() > 0 for owner in self.owners):
-                    self.state = AuctionState.NOMINATE
-                else:
+                # check if we're done, or move to the next player who still has space
+                done = True
+                for i in range(4):
+                    next_turn = (self.turn_index + 1 + i) % len(self.owners)
+                    if self.owners[next_turn].remaining_picks() > 0:
+                        self.turn_index = next_turn
+                        done = False
+                        break
+                # if we didn't move on, we're done
+                if done:
                     self.state = AuctionState.DONE
+                else:
+                    self.state = AuctionState.NOMINATE
             else:
                 # new bids have been submitted,
                 # randomly pick the bid to accept from the highest,
@@ -157,7 +180,9 @@ class Auction:
         elif self.bid > bid:
             raise InvalidActionError("Bid amount " + str(bid) + " must be greater than current bid of " + str(self.bid))
         elif not self.owners[owner_id].can_buy(self.nominee, bid):
-            raise InvalidActionError("The owner cannot afford this bid or cannot actually buy this player (due to "
+            raise InvalidActionError("The owner with index " + str(owner_id) +
+                                     " cannot afford a bid of " + str(bid) + " for player " + self.nominee.name +
+                                     " or cannot actually buy this player (due to "
                                      "not having any free slots)")
 
         # success, add their bid to the current tick
@@ -220,10 +245,12 @@ class Auction:
         if self.state == AuctionState.NOMINATE:
             response += "Nominating\n"
             response += "Owner " + str(self.turn_index) + "'s turn\n"
-        else:
+        elif self.state == AuctionState.BID:
             response += "Bidding\n\n"
             response += "Nominee: " + self.nominee.position.name + " " + self.nominee.name + " ($" + str(
                 self.nominee.value) + ")" "\n\n"
+        else:
+            response += "Done\n\n"
 
         for i, owner in enumerate(self.owners):
             response += "Owner " + str(i) + ": $" + str(self.bids[i]) + "(Tick: $" + str(
@@ -239,10 +266,6 @@ class Auction:
                     response += slot.abbreviation + " Empty\n"
                 else:
                     response += slot.abbreviation + " " + slot.occupant.name + "\n"
-
-            response += "Open:\n"
-            for roster_slot in owner.roster:
-                response += roster_slot.abbreviation + "\n"
             response += "\n"
 
         response += "\n###UNDRAFTED PLAYERS###\n"

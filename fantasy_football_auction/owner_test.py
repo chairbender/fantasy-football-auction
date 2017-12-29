@@ -89,6 +89,8 @@ class OwnerTestCase(TestCase):
 
         owner = Owner(20, [RosterSlot.QB, RosterSlot.TE], 0)
         owner.buy(player_qb, 10)
+        player_qb2 = Player("blahQB2", Position.QB, 1)
+        self.assertFalse(owner.can_buy(player_qb2, 5))
         self.assertFalse(owner.can_buy(player_te, 11))
 
     def test_max_bid(self):
