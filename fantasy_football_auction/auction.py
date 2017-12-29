@@ -198,6 +198,7 @@ class Auction:
         # nomination successful, bidding time
         self.nominee = nominated_player
         self.bid = bid
+        self.tickbids[owner_id] = bid
 
     def scores(self, starter_value):
         """
