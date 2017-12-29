@@ -66,6 +66,9 @@ class AuctionTestCase(TestCase):
         return [index for index, player in enumerate(self.players) if player.name == name][0]
 
     def test_auction(self):
+        # make sure str method works
+        str(self.auction)
+
         # play a mock game
         # To start, it should be owner 0's turn to nominate
         self.assertEqual(AuctionState.NOMINATE, self.auction.state)
@@ -104,6 +107,9 @@ class AuctionTestCase(TestCase):
         with self.assertRaises(InvalidActionError):
             self.auction.place_bid(2, 0)
 
+        # make sure str method works
+        str(self.auction)
+
         # if multiple people submit new bids, the highest one should be the "accepted" bid for that tick
         self.auction.place_bid(0, 2)
         self.auction.place_bid(1, 2)
@@ -114,6 +120,9 @@ class AuctionTestCase(TestCase):
         self.assertEqual([2, 0, 3], self.auction.bids)
         self.assertEqual(3, self.auction.bid)
 
+        # make sure str method works
+        str(self.auction)
+
         # should be able to raise bid amount for no reason
         self.auction.place_bid(2, 4)
         self.auction.tick()
@@ -122,6 +131,9 @@ class AuctionTestCase(TestCase):
         self.assertEqual([2, 0, 4], self.auction.bids)
         self.assertEqual(4, self.auction.bid)
 
+        # make sure str method works
+        str(self.auction)
+
         # no more bids, it should make the purchase and move to the next nomination
         self.auction.tick()
         self.assertEqual(AuctionState.NOMINATE, self.auction.state)
@@ -129,6 +141,9 @@ class AuctionTestCase(TestCase):
         owner2 = self.auction.owners[2]
         self.assertEqual(196, owner2.money)
         self.assertTrue(owner2.owns(self.players[self.player("GoodK1")]))
+
+        # make sure str method works
+        str(self.auction)
 
         # cannot nominate someone already nominated
         with self.assertRaises(InvalidActionError):
@@ -149,6 +164,9 @@ class AuctionTestCase(TestCase):
         self.assertEqual(self.players[self.player("GoodWR1")], self.auction.nominee)
         self.assertEqual([0, 20, 0], self.auction.bids)
         self.assertEqual(20, self.auction.bid)
+
+        # make sure str method works
+        str(self.auction)
 
         # let player 1 and 2 go back and forth a bit
         self.auction.place_bid(1, 21)
@@ -174,6 +192,11 @@ class AuctionTestCase(TestCase):
         owner2 = self.auction.owners[2]
         self.assertEqual(156, owner2.money)
         self.assertTrue(owner2.owns(self.players[self.player("GoodWR1")]))
+
+        # make sure str method works
+        str(self.auction)
+
+
 
 
 

@@ -231,11 +231,13 @@ class Auction:
         response += "\n###OWNER STATUS###\n"
 
         for i, owner in enumerate(self.owners):
-            response += "Owner " + str(i) + "\nPurchased:\n"
+            response += "Owner " + str(i) + "\nRoster:\n"
 
-            for purchase in owner.purchases:
-                response += purchase.roster_slot.abbreviation + " " + purchase.player.name + " ($" + str(
-                    purchase.cost) + ")\n"
+            for slot in owner.roster:
+                if slot.occupant is None:
+                    response += slot.abbreviation + " Empty\n"
+                else:
+                    response += slot.abbreviation + " " + slot.occupant.name + "\n"
 
             response += "Open:\n"
             for roster_slot in owner.roster:
