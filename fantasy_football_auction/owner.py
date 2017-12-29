@@ -86,6 +86,7 @@ class Owner:
         self.roster.sort(key=lambda roster_slot: roster_slot.num_accepted())
         self.id = owner_id
         self._remaining_picks = len(self.roster)
+        self._owned_player_ids = set()
 
     def _slot_in(self, player):
         """
@@ -101,20 +102,19 @@ class Owner:
         """
 
         # find the most specific slot this player can fit into where they are the highest value.
+        to_replace = player
         for roster_slot in self.roster:
-            if roster_slot.accepts(player):
+            if roster_slot.accepts(to_replace):
                 # check if the slot is already occupied
                 if roster_slot.occupant is None:
                     # We're done. Just put the new person here.
-                    roster_slot.occupant = player
+                    roster_slot.occupant = to_replace
                     break
-                elif player.value > roster_slot.occupant.value:
-                    # our value is greater, so replace
+                elif to_replace.value > roster_slot.occupant.value:
                     replacee = roster_slot.occupant
-                    roster_slot.occupant = player
-                    self._slot_in(replacee)
-                    break
-                # our value was less, so keep looking
+                    roster_slot.occupant = to_replace
+                    to_replace = replacee
+                # keep looking
 
     def buy(self, player, cost):
         """
@@ -136,6 +136,7 @@ class Owner:
 
         self.money -= cost
         self._remaining_picks -= 1
+        self._owned_player_ids.add(player.player_id)
         self._slot_in(player)
 
     def owns(self, player):
@@ -144,7 +145,7 @@ class Owner:
         :param Player player: player to check
         :return boolean: true iff this player is already owned by this owner
         """
-        return any(roster_slot.occupant == player for roster_slot in self.roster)
+        return player.player_id in self._owned_player_ids
 
     def max_bid(self):
         """
@@ -175,15 +176,6 @@ class Owner:
         """
 
         return self._remaining_picks
-
-    def possible_nominees(self, players):
-        """
-
-        :param list(Player) players: list of players to choose from
-        :return list(Player): a list of players that could be legally nominated by this owner
-        """
-
-        return [player for player in players if self.can_buy(player, 1)]
 
     def start_value(self):
         """

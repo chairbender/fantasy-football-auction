@@ -18,12 +18,12 @@ class RosterSlotTestCase(TestCase):
         pos1 = RosterSlot.QB
         pos3 = RosterSlot.WRRBTE
         pos11 = RosterSlot.BN
-        player_qb = Player("blahQB", Position.QB, 1)
-        player_wr = Player("blahWR", Position.WR, 1)
-        player_rb = Player("blahRB", Position.RB, 1)
-        player_te = Player("blahTE", Position.TE, 1)
-        player_cb = Player("blahCB", Position.CB, 1)
-        player_s = Player("blahS", Position.S, 1)
+        player_qb = Player("blahQB", Position.QB, 1, 0)
+        player_wr = Player("blahWR", Position.WR, 1, 1)
+        player_rb = Player("blahRB", Position.RB, 1, 2)
+        player_te = Player("blahTE", Position.TE, 1, 3)
+        player_cb = Player("blahCB", Position.CB, 1, 4)
+        player_s = Player("blahS", Position.S, 1, 5)
         self.assertTrue(pos1.accepts(player_qb))
         self.assertTrue(pos3.accepts(player_wr))
         self.assertTrue(pos3.accepts(player_rb))

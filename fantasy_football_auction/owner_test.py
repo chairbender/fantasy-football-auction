@@ -10,10 +10,10 @@ class OwnerTestCase(TestCase):
 
     def test_buy_error(self):
         owner = Owner(20, [RosterSlot.QB, RosterSlot.QB, RosterSlot.TE], 0)
-        player_qb = Player("blahQB", Position.QB, 1)
-        player_te = Player("blahTE", Position.TE, 1)
-        player_te2 = Player("blahTE2", Position.TE, 2)
-        player_wr = Player("blahWR", Position.WR, 1)
+        player_qb = Player("blahQB", Position.QB, 1, 0)
+        player_te = Player("blahTE", Position.TE, 1, 1)
+        player_te2 = Player("blahTE2", Position.TE, 2, 2)
+        player_wr = Player("blahWR", Position.WR, 1, 3)
 
         with self.assertRaises(InsufficientFundsError):
             owner.buy(player_qb, 21)
@@ -27,7 +27,7 @@ class OwnerTestCase(TestCase):
 
         with self.assertRaises(AlreadyPurchasedError):
             owner.buy(player_qb, 3)
-            player_qb_dupe = Player("blahQB", Position.QB, 1)
+            player_qb_dupe = Player("blahQB", Position.QB, 1, 0)
             owner.buy(player_qb_dupe, 3)
 
         owner = Owner(20, [RosterSlot.QB, RosterSlot.TE], 0)
@@ -37,9 +37,9 @@ class OwnerTestCase(TestCase):
 
     def test_buy(self):
         owner = Owner(20, [RosterSlot.WR, RosterSlot.WRRBTE, RosterSlot.BN], 0)
-        player_wr = Player("blahWR", Position.WR, 1)
-        player_wr2 = Player("blahWR2", Position.WR, 2)
-        player_te = Player("blahTE", Position.TE, 3)
+        player_wr = Player("blahWR", Position.WR, 1, 0)
+        player_wr2 = Player("blahWR2", Position.WR, 2, 1)
+        player_te = Player("blahTE", Position.TE, 3, 2)
 
         owner.buy(player_wr, 5)
 
@@ -72,9 +72,9 @@ class OwnerTestCase(TestCase):
 
     def test_can_buy(self):
         owner = Owner(20, [RosterSlot.QB, RosterSlot.QB, RosterSlot.TE], 0)
-        player_qb = Player("blahQB", Position.QB, 1)
-        player_te = Player("blahTE", Position.TE, 1)
-        player_wr = Player("blahWR", Position.WR, 1)
+        player_qb = Player("blahQB", Position.QB, 1, 0)
+        player_te = Player("blahTE", Position.TE, 1, 1)
+        player_wr = Player("blahWR", Position.WR, 1, 2)
 
         self.assertFalse(owner.can_buy(player_qb, 21))
 
@@ -84,19 +84,19 @@ class OwnerTestCase(TestCase):
         self.assertFalse(owner.can_buy(player_te, 3))
 
         owner.buy(player_qb, 3)
-        player_qb_dupe = Player("blahQB", Position.QB, 1)
+        player_qb_dupe = Player("blahQB", Position.QB, 1, 0)
         self.assertFalse(owner.can_buy(player_qb_dupe, 1))
 
         owner = Owner(20, [RosterSlot.QB, RosterSlot.TE], 0)
         owner.buy(player_qb, 10)
-        player_qb2 = Player("blahQB2", Position.QB, 1)
+        player_qb2 = Player("blahQB2", Position.QB, 4, 4)
         self.assertFalse(owner.can_buy(player_qb2, 5))
         self.assertFalse(owner.can_buy(player_te, 11))
 
     def test_max_bid(self):
         owner = Owner(20, [RosterSlot.QB, RosterSlot.QB, RosterSlot.TE], 0)
-        player_qb = Player("blahQB", Position.QB, 1)
-        player_qb2 = Player("blahQB2", Position.QB, 1)
+        player_qb = Player("blahQB", Position.QB, 1, 0)
+        player_qb2 = Player("blahQB2", Position.QB, 1, 1)
 
         self.assertEqual(18, owner.max_bid())
 
@@ -108,9 +108,9 @@ class OwnerTestCase(TestCase):
 
     def test_scoring_value(self):
         owner = Owner(20, [RosterSlot.WR, RosterSlot.WRRBTE, RosterSlot.BN], 0)
-        player_wr = Player("blahWR", Position.WR, 1)
-        player_wr2 = Player("blahWR2", Position.WR, 2)
-        player_te = Player("blahTE", Position.TE, 3)
+        player_wr = Player("blahWR", Position.WR, 1, 0)
+        player_wr2 = Player("blahWR2", Position.WR, 2, 1)
+        player_te = Player("blahTE", Position.TE, 3, 2)
         owner.buy(player_te, 5)
         owner.buy(player_wr2, 5)
         owner.buy(player_wr, 5)
@@ -120,9 +120,9 @@ class OwnerTestCase(TestCase):
         self.assertAlmostEqual(3, owner.score(.5))
 
         owner = Owner(20, [RosterSlot.WR, RosterSlot.WRRBTE, RosterSlot.BN], 0)
-        player_wr = Player("blahWR", Position.WR, 5)
-        player_wr2 = Player("blahWR2", Position.WR, 10)
-        player_te = Player("blahTE", Position.TE, 20)
+        player_wr = Player("blahWR", Position.WR, 5, 0)
+        player_wr2 = Player("blahWR2", Position.WR, 10, 1)
+        player_te = Player("blahTE", Position.TE, 20, 2)
         owner.buy(player_te, 5)
         owner.buy(player_wr2, 5)
         owner.buy(player_wr, 5)
