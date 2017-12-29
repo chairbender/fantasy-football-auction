@@ -7,6 +7,7 @@ Owner class.
 from enum import Enum
 from functools import reduce
 
+from fantasy_football_auction.player import Player
 from fantasy_football_auction.position import RosterSlot
 
 

@@ -72,6 +72,7 @@ class Auction:
         """
         self.owners = [Owner(money, roster, i) for i in range(num_owners)]
         self.players = players
+        self.players.sort(key=lambda player: player.value, reverse=True)
         # sorted by value
         self.undrafted_players = list(players)
         self.undrafted_players.sort(key=lambda player: player.value, reverse=True)
@@ -84,12 +85,26 @@ class Auction:
         self.bids = [0] * num_owners
         self.bid = None
 
+        # for performance reasons
+        self._nominee_index = -1
+        # stores the owner_id (or -1 if unowned) of each player
+        self._player_ownership = [-1 for player in self.players]
+
     def _winning_owner(self):
         """
 
         :return Owner: owner who bid the most
         """
         return self.owners[self.winning_owner_index()]
+
+    def owner_index_of_player(self, player_idx):
+        """
+        Fast way to look up the owner_id of the owner for a given player
+        :param int player_idx: index of the player to lookup
+        :return int: -1 if unowned, else the owner_id of the owner
+        """
+
+        return self._player_ownership[player_idx]
 
     def winning_owner_index(self):
         """
@@ -110,10 +125,7 @@ class Auction:
 
         :return: int: index of the current player nominee in the players list. -1 if no nominee.
         """
-        for idx, player in enumerate(self.players):
-            if player == self.nominee:
-                return idx
-        return -1
+        return self._nominee_index
 
     def tick(self):
         """
@@ -135,6 +147,7 @@ class Auction:
             if not any(bid > 0 for bid in self.tickbids):
                 winner = self._winning_owner()
                 winner.buy(self.nominee, self.bid)
+                self._player_ownership[self._nominee_index] = self.winning_owner_index()
                 self.undrafted_players.remove(self.nominee)
                 self.nominee = None
                 # check if we're done, or move to the next player who still has space
@@ -193,7 +206,7 @@ class Auction:
         Nominates the player for auctioning.
 
         :param int owner_id: index of the owner who is nominating
-        :param int player_idx: index of the player to nominate in the players array
+        :param int player_idx: index of the player to nominate in the players list
         :param int bid: starting bid
 
         :raise InvalidActionError: if the action is not allowed according to the rules. See the error message
@@ -222,6 +235,7 @@ class Auction:
 
         # nomination successful, bidding time
         self.nominee = nominated_player
+        self._nominee_index = player_idx
         self.bid = bid
         self.tickbids[owner_id] = bid
 
