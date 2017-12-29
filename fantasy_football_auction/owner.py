@@ -85,6 +85,7 @@ class Owner:
         self.roster = [OwnerRosterSlot.from_roster_slot(roster_slot) for roster_slot in roster]
         self.roster.sort(key=lambda roster_slot: roster_slot.num_accepted())
         self.id = owner_id
+        self._remaining_picks = len(self.roster)
 
     def _slot_in(self, player):
         """
@@ -134,6 +135,7 @@ class Owner:
             raise AlreadyPurchasedError()
 
         self.money -= cost
+        self._remaining_picks -= 1
         self._slot_in(player)
 
     def owns(self, player):
@@ -172,7 +174,7 @@ class Owner:
         :return int: the number of picks left for this owner to make until their roster is filled, 0 if full
         """
 
-        return len([None for roster_slot in self.roster if roster_slot.occupant is None])
+        return self._remaining_picks
 
     def possible_nominees(self, players):
         """

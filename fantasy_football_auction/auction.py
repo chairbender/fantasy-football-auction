@@ -139,7 +139,7 @@ class Auction:
                 self.nominee = None
                 # check if we're done, or move to the next player who still has space
                 done = True
-                for i in range(4):
+                for i in range(len(self.owners)):
                     next_turn = (self.turn_index + 1 + i) % len(self.owners)
                     if self.owners[next_turn].remaining_picks() > 0:
                         self.turn_index = next_turn
