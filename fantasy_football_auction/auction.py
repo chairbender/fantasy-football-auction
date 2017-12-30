@@ -229,8 +229,9 @@ class Auction:
                                      str(owner.max_bid()))
         elif bid < 1:
             raise InvalidActionError("Bid amount was " + str(bid) + " but must be greater than 1")
-        elif not any(owner.can_buy(nominated_player, bid) for owner in self.owners):
-            raise InvalidActionError("No owner can actually buy this player, so nomination is not allowed.")
+        elif not owner.can_buy(nominated_player, bid):
+            raise InvalidActionError("The owner cannot make this nomination because they cannot slot or cannot"
+                                     " afford the player for the specified bid amount")
 
         # nomination successful, bidding time
         self.nominee = nominated_player
