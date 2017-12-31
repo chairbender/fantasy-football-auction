@@ -216,21 +216,27 @@ class Auction:
         nominated_player = self.players[player_idx]
 
         if self.state != AuctionState.NOMINATE:
-            raise InvalidActionError("Auction state is not NOMINATE, so nomination is not allowed")
+            raise InvalidActionError("Owner " + str(owner_id) +
+                                     " tried to nominate, but Auction state "
+                                     "is not NOMINATE, so nomination is not allowed")
         elif self.turn_index != owner_id:
             raise InvalidActionError("Owner " + str(owner_id) + " tried to nominate, but it is currently " +
                                      str(self.turn_index) + "'s turn")
         elif nominated_player not in self.undrafted_players:
-            raise InvalidActionError("The player with index " + str(player_idx) + ", named " +
+            raise InvalidActionError("Owner " + str(owner_id) + "tried to nominate the player with index " + str(player_idx) + ", named " +
                                      nominated_player.name +
-                                     " has already been purchased and cannot be nominated.")
+                                     ", but they have already been purchased and cannot be nominated.")
         elif bid > owner.max_bid():
-            raise InvalidActionError("Bid amount was " + str(bid) + " but this owner can only bid a maximum of " +
+            raise InvalidActionError("Bid amount was " + str(bid) + " but this owner (Owner " + str(owner_id) +
+                                     " can only bid a maximum of " +
                                      str(owner.max_bid()))
         elif bid < 1:
-            raise InvalidActionError("Bid amount was " + str(bid) + " but must be greater than 1")
+            raise InvalidActionError("Owner " + str(owner_id) + "'s bid amount was " + str(bid) +
+                                     " but must be greater than 1")
         elif not owner.can_buy(nominated_player, bid):
-            raise InvalidActionError("The owner cannot make this nomination because they cannot slot or cannot"
+            raise InvalidActionError("Owner " + str(owner_id) + " cannot make this nomination for player with index "
+                                     + str(player_idx) + ", named " +
+                                     nominated_player.name + ", because they cannot slot or cannot"
                                      " afford the player for the specified bid amount")
 
         # nomination successful, bidding time
