@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(name='fantasy_football_auction',
       packages=['fantasy_football_auction'],
-      version='0.9.8',
+      version='0.9.9',
       description='Python library simulating a fantasy football auction. Intended to be used for AI, but you should be '
                   'able to use this for other purposes as well. This task assumes that each draftable player has a '
                   'specific value (for example, looking at the ratings from FantasyPros).',
