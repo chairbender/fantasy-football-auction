@@ -189,7 +189,7 @@ class Auction:
 
         if self.state != AuctionState.BID:
             raise InvalidActionError("Bid was attempted, but it is not currently time to submit bids.")
-        elif self.bid > bid:
+        elif self.bid >= bid:
             raise InvalidActionError("Bid amount " + str(bid) + " must be greater than current bid of " + str(self.bid))
         elif not self.owners[owner_id].can_buy(self.nominee, bid):
             raise InvalidActionError("The owner with index " + str(owner_id) +
