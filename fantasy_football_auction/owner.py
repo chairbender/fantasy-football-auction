@@ -186,7 +186,7 @@ class Owner:
         """
 
         return reduce(lambda x, y: x + y, [roster_slot.occupant.value for roster_slot in self.roster
-                                           if roster_slot != RosterSlot.BN])
+                                           if roster_slot != RosterSlot.BN and roster_slot.occupant is not None])
 
     def bench_value(self):
         """
@@ -199,7 +199,7 @@ class Owner:
             return 0
         else:
             return reduce(lambda x, y: x + y, [roster_slot.occupant.value for roster_slot in self.roster
-                                               if roster_slot == RosterSlot.BN])
+                                               if roster_slot == RosterSlot.BN and roster_slot.occupant is not None])
 
     def score(self, starter_value):
         """

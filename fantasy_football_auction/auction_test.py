@@ -111,19 +111,8 @@ class AuctionTestCase(TestCase):
         str(self.auction)
 
         # if multiple people submit new bids, the highest one should be the "accepted" bid for that tick
-        self.auction.place_bid(0, 2)
-        self.auction.place_bid(1, 2)
-        self.auction.place_bid(2, 3)
-        self.auction.tick()
-        self.assertEqual(AuctionState.BID, self.auction.state)
-        self.assertEqual(self.players[self.player("GoodK1")], self.auction.nominee)
-        self.assertEqual([2, 0, 3], self.auction.bids)
-        self.assertEqual(3, self.auction.bid)
-
-        # make sure str method works
-        str(self.auction)
-
-        # should be able to raise bid amount for no reason
+        self.auction.place_bid(0, 3)
+        self.auction.place_bid(1, 3)
         self.auction.place_bid(2, 4)
         self.auction.tick()
         self.assertEqual(AuctionState.BID, self.auction.state)
@@ -134,12 +123,23 @@ class AuctionTestCase(TestCase):
         # make sure str method works
         str(self.auction)
 
+        # should be able to raise bid amount for no reason
+        self.auction.place_bid(2, 5)
+        self.auction.tick()
+        self.assertEqual(AuctionState.BID, self.auction.state)
+        self.assertEqual(self.players[self.player("GoodK1")], self.auction.nominee)
+        self.assertEqual([2, 0, 5], self.auction.bids)
+        self.assertEqual(5, self.auction.bid)
+
+        # make sure str method works
+        str(self.auction)
+
         # no more bids, it should make the purchase and move to the next nomination
         self.auction.tick()
         self.assertEqual(AuctionState.NOMINATE, self.auction.state)
         self.assertEqual(1, self.auction.turn_index)
         owner2 = self.auction.owners[2]
-        self.assertEqual(196, owner2.money)
+        self.assertEqual(195, owner2.money)
         self.assertTrue(owner2.owns(self.players[self.player("GoodK1")]))
 
         # make sure str method works
@@ -190,7 +190,7 @@ class AuctionTestCase(TestCase):
         self.assertEqual(AuctionState.NOMINATE, self.auction.state)
         self.assertEqual(2, self.auction.turn_index)
         owner2 = self.auction.owners[2]
-        self.assertEqual(156, owner2.money)
+        self.assertEqual(155, owner2.money)
         self.assertTrue(owner2.owns(self.players[self.player("GoodWR1")]))
 
         # make sure str method works
