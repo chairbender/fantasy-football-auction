@@ -149,6 +149,7 @@ class Auction:
                 self._player_ownership[self._nominee_index] = self.winning_owner_index()
                 self.undrafted_players.remove(self.nominee)
                 self.nominee = None
+                self._nominee_index = -1
                 # check if we're done, or move to the next player who still has space
                 done = True
                 for i in range(len(self.owners)):
