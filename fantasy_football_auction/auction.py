@@ -286,7 +286,8 @@ class Auction:
                 if slot.occupant is None:
                     response += slot.abbreviation + " Empty\n"
                 else:
-                    response += slot.abbreviation + " " + slot.occupant.name + "\n"
+                    response += slot.abbreviation + " " + slot.occupant.name + " ($" + str(
+                                slot.occupant.value) + ")\n"
             response += "\n"
 
         response += "\n###UNDRAFTED PLAYERS###\n"
