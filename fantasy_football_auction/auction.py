@@ -294,6 +294,6 @@ class Auction:
 
         for i, player in enumerate(self.undrafted_players):
             response += str(i + 1) + ". " + str(player.position.name) + " " + str(player.name) + " ($" + str(
-                player.value) + ")\n"
+                player.value) + "), "
 
         return response
