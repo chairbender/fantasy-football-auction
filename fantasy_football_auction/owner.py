@@ -38,10 +38,12 @@ class AlreadyPurchasedError(Error):
 
 class OwnerRosterSlot(RosterSlot):
     """
-    Just like a RosterSlot, but has the possibility of having a player occupying or not occupying it.
+    Just like a RosterSlot, but has the possibility of having a player occupying or not occupying it, and a purchase
+    price.
 
     Attributes:
         :ivar Player occupant: player which has filled this slot. None if not filled.
+        :ivar int cost: price the player was purchased for
     """
 
     @classmethod
@@ -61,6 +63,7 @@ class OwnerRosterSlot(RosterSlot):
         """
         super(OwnerRosterSlot, self).__init__(positions, abbreviation)
         self.occupant = None
+        self.cost = -1
 
 
 class Owner:
@@ -89,7 +92,7 @@ class Owner:
         self._remaining_picks = len(self.roster)
         self._owned_player_ids = set()
 
-    def _slot_in(self, player):
+    def _slot_in(self, player, cost):
         """
 
         :param Player player: player to slot into the owner's current roster. Puts this
@@ -99,22 +102,31 @@ class Owner:
 
             This has the side effect of ensuring that the highest value players are on the start rather than the
             bench. It also seems to match how fantasy owners like to order their team.
+        :param int cost: cost paid for this player
 
         """
 
         # find the most specific slot this player can fit into where they are the highest value.
         to_replace = player
+        to_replace_cost = cost
         for roster_slot in self.roster:
             if roster_slot.accepts(to_replace):
                 # check if the slot is already occupied
                 if roster_slot.occupant is None:
                     # We're done. Just put the new person here.
                     roster_slot.occupant = to_replace
+                    roster_slot.cost = to_replace_cost
                     break
                 elif to_replace.value > roster_slot.occupant.value:
+                    # the new player's value is higher than this slot's value, so
+                    # put the new player here and kick out the old player, then keep looking
+                    # for a new spot for the kicked-out player
                     replacee = roster_slot.occupant
+                    replacee_cost = roster_slot.cost
                     roster_slot.occupant = to_replace
+                    roster_slot.cost = to_replace_cost
                     to_replace = replacee
+                    to_replace_cost = replacee_cost
                 # keep looking
 
     def buy(self, player, cost):
@@ -138,7 +150,7 @@ class Owner:
         self.money -= cost
         self._remaining_picks -= 1
         self._owned_player_ids.add(player.player_id)
-        self._slot_in(player)
+        self._slot_in(player, cost)
 
     def owns(self, player):
         """
